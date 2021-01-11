@@ -16,7 +16,7 @@ OUTPUT = solver
 #General rule buils FEM Solver
 build: solver
 
-#Rule to build the matrix generator program
+#Rule to build the solver program
 solver:
 	$(CCPLUS) main.cpp -o solver $(FLAGS) $(FLAGS_OMP)
 
