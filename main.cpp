@@ -6,26 +6,24 @@
 int main()
 {
     //matherial properties
-    double A = 2;       // elements' cross area
-    double E = 10e6;    // Young's modulus
+    double A = 1;       // elements' cross area
+    double E = 1;    // Young's modulus
 
     // nodes coordinates definition (each node x and y) in one table as they are also dofs
-    const size_t nodesCount = 4;
+    const size_t nodesCount = 3;
     const size_t dofsCount = 2 * nodesCount;
     double coordinates[dofsCount] = { 
         0, 0,       // node 0
-        0, 100,     // node 1
-        100, 0,     // node 2
-        100, 100    // node 3
+        1, 0,     // node 1
+        1, 1,   // node 2
     };
 
     // nodes connections by the elements
-    const size_t elementsCount = 4;
+    const size_t elementsCount = 3;
     uint topology[elementsCount][4] = {
-        { 2, 3, 6, 7 },     // node 1 to 3
-        { 0, 1, 6, 7 },     // node 0 to 3
+        { 0, 1, 2, 3 },     // node 1 to 1
+        { 2, 3, 4, 5 },     // node 1 to 2
         { 0, 1, 4, 5 },     // node 0 to 2
-        { 4, 5, 6, 7 }      // node 2 to 3
     };
 
     // constrains of each node and x and y directions (true=fixed, false=not fixed)
@@ -33,15 +31,13 @@ int main()
         true, true,     // node 0 fixed along x and y axis
         true, true,     // node 1 fixed along x and y axis
         false, false,   // node 2 not fixed along x and y axis
-        false, false    // node 3 not fixed along x and y axis
     };
 
     // external forces applied to the truss
     std::vector<double> externalForces = { 
-        0, 0,       // no forces at node 0
-        0, 0,       // no forces at node 1
-        0, 0,       // no forces at node 2
-        0, -10000   // 10 000 N at node 3 vertical downside
+        0, 0,           // no forces at node 0
+        0, 0,           // no forces at node 1
+        2, -1,    // no forces at node 2
     };
 
     // global stiffness matrix declaration
@@ -186,7 +182,7 @@ int main()
         // elements' internal stress
         arma::Col<double> elementInternalForces(4);
         arma::solve(elementInternalForces, transformationMatrix, elementGlobalForces);
-        std::cout << "ELEMENT " << i << "\tElement internal forces vector: " << std::endl;
+        std::cout << "ELEMENT " << i << " internal forces vector: " << std::endl;
         std::cout << elementInternalForces << std::endl;
     }
 
