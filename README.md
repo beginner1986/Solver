@@ -1,7 +1,5 @@
 # Finite Element Method Solver
 
-[![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
-
 ### INTRODUCTION
 This project is implementation of my master degree thesis task. The program is to solve flat truss using FEM (Finite Element Method).
 
@@ -47,3 +45,21 @@ $ cmake .
 $ sudo make install
 ```
 
+### USAGE
+Lazy way to run the project:
+```sh
+$ ./rebuild
+```
+Just build the solver app:
+```sh
+$ make build
+```
+or simply
+```sh
+$ make
+```
+
+Remove created files:
+```sh
+$ make clean
+```
