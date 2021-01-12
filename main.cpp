@@ -54,6 +54,9 @@ int main()
     localStiffnessTemplate(2, 0) = -1;
     localStiffnessTemplate(2, 2) = 1;
 
+    // sinus, cosinus and lenghts ot each element is stored for further stress computation
+    std::vector<double> sins, coss, lengths;
+
     for(size_t i=0; i<elementsCount; i++)
     {
         std::cout << "ELEMENT " << i << std::endl;
@@ -71,11 +74,14 @@ int main()
         double dx = abs(x2 - x1);
         double dy = abs(y2 - y1);
         double length = sqrt(dx * dx + dy * dy);
+        lengths.push_back(length);
         std::cout << "\tdx = " << dx << "; dy = " << dy << "; l = " << length << std::endl;
 
         // cosinus and sinus of the angle between local and global CS
         double cos = dx / length;
+        coss.push_back(cos);
         double sin = dy / length;
+        sins.push_back(sin);
         std::cout << "\tcos = " << cos << "; sin =" << sin << std::endl;
 
         // beam stiffness value (scalar)
@@ -157,6 +163,32 @@ int main()
 
     std::cout << "Global displacements vector: " << std::endl;
     std::cout << dispalcements << std::endl;
+
+    // elements internal forces
+    for(size_t i=0; i<elementsCount; i++)
+    {
+        // degrees of freedom
+        uint dofs[4] = { topology[i][0], topology[i][1], topology[i][2], topology[i][3] };
+
+        // transformation global forces to elements' internal forces
+        arma::Mat<double> transformationMatrix = {
+            { coss[i], sins[i], 0, 0},
+            { -sins[i], coss[i], 0, 0},
+            { 0, 0, coss[i], sins[i] },
+            { 0, 0, -sins[i], coss[i] }
+        };
+
+        // forces applied to the element in global CS
+        arma::Col<double> elementGlobalForces(4);
+        for(size_t i=0; i<4; i++)
+            elementGlobalForces(i) = globalForces(dofs[i]);
+
+        // elements' internal stress
+        arma::Col<double> elementInternalForces(4);
+        arma::solve(elementInternalForces, transformationMatrix, elementGlobalForces);
+        std::cout << "ELEMENT " << i << "\tElement internal forces vector: " << std::endl;
+        std::cout << elementInternalForces << std::endl;
+    }
 
     return 0;
 }
