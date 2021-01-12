@@ -97,7 +97,7 @@ int main()
         arma::Mat<double> elementStiffnessGlobal = transtofrmationMatrix * k;
 
         cout << "\tElement stiffness matrix in global CS:" << endl;
-        cout << globalStiffness << endl;
+        cout << elementStiffnessGlobal << endl;
 
         // assembly global stiffness matrix
         for(size_t i=0; i<4; i++)
@@ -113,6 +113,9 @@ int main()
 
     cout << "Global stiffness matrix: " << endl;
     cout << globalStiffness << endl;
+
+    // global forces vector
+    arma::Col<double> globalForces(dofsCount, arma::fill::zeros);
 
     return 0;
 }
