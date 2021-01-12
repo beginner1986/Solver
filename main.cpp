@@ -17,7 +17,7 @@ int main()
 
     // nides connections by the beams
     const size_t elementsCount = 4;
-    int topology[elementsCount][4] = {
+    uint topology[elementsCount][4] = {
         { 0, 1, 2, 3 },
         { 2, 3, 4, 5 },
         { 4, 5, 6, 7 },
@@ -37,17 +37,14 @@ int main()
 
     for(size_t i=0; i<elementsCount; i++)
     {
-        // extract element's nodes indexes
-        size_t x1Index = topology[i][0];
-        size_t y1Index = topology[i][1];
-        size_t x2Index = topology[i][2];
-        size_t y2Index = topology[i][3];
+        // element's degrees of freenoom matrix
+        uint dofs[4] = { topology[i][0], topology[i][1], topology[i][2], topology[i][3] };
 
         // extract element's begin and end coordinates
-        double x1 = coordinates[x1Index];
-        double x2 = coordinates[y1Index];
-        double y1 = coordinates[x2Index];
-        double y2 = coordinates[y2Index];
+        double x1 = coordinates[dofs[0]];
+        double y1 = coordinates[dofs[1]];
+        double x2 = coordinates[dofs[2]];
+        double y2 = coordinates[dofs[3]];
 
         // claculate the length nad parameters for trigonometry
         double dx = abs(x2 - x1);
