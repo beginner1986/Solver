@@ -8,20 +8,20 @@ int main()
 {
     //matherial properties
     double A = 2;
-    double E = 30e6;
+    double E = 1e6;
 
     // nodes coordinates definition
     const size_t nodesCount = 4;
     const size_t dofsCount = 2 * nodesCount;
-    double coordinates[dofsCount] = { 0, 0, 0, 120, 120, 120, 120, 0 };
+    double coordinates[dofsCount] = { 0, 0, 0, 100, 100, 0, 100, 100 };
 
     // nides connections by the beams
     const size_t elementsCount = 4;
     uint topology[elementsCount][4] = {
-        { 0, 1, 2, 3 },
-        { 2, 3, 4, 5 },
-        { 4, 5, 6, 7 },
-        { 0, 1, 6, 7 }
+        { 2, 3, 6, 7 },
+        { 0, 1, 6, 7 },
+        { 0, 1, 4, 5 },
+        { 4, 5, 6, 7 }
     };
 
     // global stiffness matrix declaration
