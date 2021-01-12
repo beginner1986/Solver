@@ -37,6 +37,7 @@ int main()
 
     for(size_t i=0; i<elementsCount; i++)
     {
+        cout << "ELEMENT " << i << endl;
         // element's degrees of freenoom matrix
         uint dofs[4] = { topology[i][0], topology[i][1], topology[i][2], topology[i][3] };
 
@@ -45,21 +46,29 @@ int main()
         double y1 = coordinates[dofs[1]];
         double x2 = coordinates[dofs[2]];
         double y2 = coordinates[dofs[3]];
+        cout << "\t(" << x1 << ", " << y1 << ") - (" << x2 << ", " << y2 << ")" << endl;
 
         // claculate the length nad parameters for trigonometry
         double dx = abs(x2 - x1);
         double dy = abs(y2 - y1);
         double length = sqrt(dx * dx + dy * dy);
+        cout << "\tdx = " << dx << "; dy = " << dy << "; l = " << length << endl;
 
         // cosinus and sinus of the angle between local and global CS
         double cos = dx / length;
         double sin = dy / length;
+        cout << "\tcos = " << cos << "; sin =" << sin << endl;
 
         // beam stiffness value (scalar)
         double k = (A * E) / length;
+        cout << "\tk = " << k << endl;
 
         // element's stfiffness matrix in local CS
-        arma::Mat<double> elementStiffnessLocal = k * localStiffness;
+        arma::Mat<double> elementStiffnessLocal = localStiffness;
+        elementStiffnessLocal *= k;
+
+        cout << "\t element stiffness in local CS:" << endl;
+        cout << elementStiffnessLocal << endl;
 
         // transformation matrix
         arma::Mat<double> transtofrmationMatrix = {
@@ -68,10 +77,29 @@ int main()
             { -cos * cos, - cos * sin, cos * cos, cos * sin },
             { -cos * sin, -sin * sin, cos * sin, sin * sin }
         };
+        cout << "\tTransformation matrix:" << endl;
+        cout << transtofrmationMatrix << endl;
 
         // calculate element's stiffnesss matrix in global CS
-        arma::Mat<double> elementStiffnessGlobal = k * transtofrmationMatrix;
+        arma::Mat<double> elementStiffnessGlobal = transtofrmationMatrix * k;
+
+        cout << "\tElement stiffness matrix in global CS:" << endl;
+        cout << globalStiffness << endl;
+
+        // assembly global stiffness matrix
+        for(size_t i=0; i<4; i++)
+        {
+            for(size_t j=0; j<4; j++)
+            {
+                globalStiffness(dofs[i], dofs[j]) += elementStiffnessGlobal(i, j);
+                cout << "\tdofs: " << dofs[i] << " " << dofs[j] << endl;
+                cout << "\tvalue = " << elementStiffnessGlobal(i, j) << endl << endl;
+            }
+        }
     }
+
+    cout << "Global stiffness matrix: " << endl;
+    cout << globalStiffness << endl;
 
     return 0;
 }
