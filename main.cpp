@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <cmath>
 #include <armadillo>
 
@@ -20,7 +21,7 @@ int main()
         100, 100    // node 3
     };
 
-    // nides connections by the beams
+    // nodes connections by the elements
     const size_t elementsCount = 4;
     uint topology[elementsCount][4] = {
         { 2, 3, 6, 7 },     // node 1 to 3
@@ -29,8 +30,16 @@ int main()
         { 4, 5, 6, 7 }      // node 2 to 3
     };
 
+    // constrains of each node and x and y directions (true=fixed, false=not fixed)
+    bool constrains[dofsCount] = { 
+        true, true,     // node 0 fixed along x and y axis
+        true, true,     // node 1 fixed along x and y axis
+        false, false,   // node 2 not fixed along x and y axis
+        false, false    // node 3 not fixed along x and y axis
+    };
+
     // external forces applied to the truss
-    double externalForces[dofsCount] = { 
+    vector<double> externalForces = { 
         0, 0,       // no forces at node 0
         0, 0,       // no forces at node 1
         0, 0,       // no forces at node 2
@@ -115,7 +124,37 @@ int main()
     cout << globalStiffness << endl;
 
     // global forces vector
-    arma::Col<double> globalForces(dofsCount, arma::fill::zeros);
+    arma::Col<double> globalForces(externalForces);
+    cout << "Global forces vector: " << endl;
+    cout << globalForces << endl;
+
+    // global stiffness matrix and load vector reduction according to given constrains
+    arma::Mat<double> reducedStiffness = globalStiffness;
+    arma::Col<double> reducedForces = globalForces;
+
+    for(int i=dofsCount-1; i>=0; i--)
+    {
+        if(constrains[i])
+        {
+            reducedStiffness.shed_col(i);
+            reducedStiffness.shed_row(i);
+            reducedForces.shed_row(i);
+        }
+    }
+
+    cout << "Reduced stiffness matrix:" << endl;
+    cout << reducedStiffness << endl;
+
+    cout << "Reduced loads' vector:" << endl;
+    cout << reducedForces << endl; 
+
+    // global displacements' vector
+    arma::Col<double> dispalcements(dofsCount, arma::fill::zeros);
+
+    // TODO
+
+    cout << "Global displacements vector: " << endl;
+    cout << dispalcements << endl;
 
     return 0;
 }
