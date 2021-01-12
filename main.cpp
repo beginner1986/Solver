@@ -7,21 +7,34 @@ using namespace std;
 int main()
 {
     //matherial properties
-    double A = 2;
-    double E = 1e6;
+    double A = 2;       // elements' cross area
+    double E = 1e6;     // Young's modulus
 
-    // nodes coordinates definition
+    // nodes coordinates definition (each node x and y) in one table as they are also dofs
     const size_t nodesCount = 4;
     const size_t dofsCount = 2 * nodesCount;
-    double coordinates[dofsCount] = { 0, 0, 0, 100, 100, 0, 100, 100 };
+    double coordinates[dofsCount] = { 
+        0, 0,       // node 0
+        0, 100,     // node 1
+        100, 0,     // node 2
+        100, 100    // node 3
+    };
 
     // nides connections by the beams
     const size_t elementsCount = 4;
     uint topology[elementsCount][4] = {
-        { 2, 3, 6, 7 },
-        { 0, 1, 6, 7 },
-        { 0, 1, 4, 5 },
-        { 4, 5, 6, 7 }
+        { 2, 3, 6, 7 },     // node 1 to 3
+        { 0, 1, 6, 7 },     // node 0 to 3
+        { 0, 1, 4, 5 },     // node 0 to 2
+        { 4, 5, 6, 7 }      // node 2 to 3
+    };
+
+    // external forces applied to the truss
+    double externalForces[dofsCount] = { 
+        0, 0,       // no forces at node 0
+        0, 0,       // no forces at node 1
+        0, 0,       // no forces at node 2
+        0, -10000   // 10 000 N at node 3 vertical downside
     };
 
     // global stiffness matrix declaration
@@ -92,8 +105,8 @@ int main()
             for(size_t j=0; j<4; j++)
             {
                 globalStiffness(dofs[i], dofs[j]) += elementStiffnessGlobal(i, j);
-                cout << "\tdofs: " << dofs[i] << " " << dofs[j] << endl;
-                cout << "\tvalue = " << elementStiffnessGlobal(i, j) << endl << endl;
+                //cout << "\tdofs: " << dofs[i] << ", " << dofs[j] << endl;
+                //cout << "\tvalue = " << elementStiffnessGlobal(i, j) << endl << endl;
             }
         }
     }
