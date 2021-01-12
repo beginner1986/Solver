@@ -9,7 +9,7 @@ int main()
 {
     //matherial properties
     double A = 2;       // elements' cross area
-    double E = 1e6;     // Young's modulus
+    double E = 10e6;     // Young's modulus
 
     // nodes coordinates definition (each node x and y) in one table as they are also dofs
     const size_t nodesCount = 4;
@@ -148,10 +148,21 @@ int main()
     cout << "Reduced loads' vector:" << endl;
     cout << reducedForces << endl; 
 
+    // reduced displacements' vector
+    arma::Col<double> reducedDisplacements(dofsCount);
+    arma::solve(reducedDisplacements, reducedStiffness, reducedForces);
+    cout << "Reduced displacements' vector: " << endl;
+    cout << reducedDisplacements << endl;
+
     // global displacements' vector
     arma::Col<double> dispalcements(dofsCount, arma::fill::zeros);
-
-    // TODO
+    
+    uint count = 0;
+    for(size_t i=0; i<dofsCount; i++)
+    {
+        if(!constrains[i])
+            dispalcements(i) = reducedDisplacements(count++);
+    }
 
     cout << "Global displacements vector: " << endl;
     cout << dispalcements << endl;
