@@ -4,43 +4,30 @@
 #include <cmath>
 #include <armadillo>
 
+#include "Truss.h"
+
 int main()
 {
+    Truss truss;
+
     // material properties
-    double A = 1;       // elements' cross area
-    double E = 1;       // Young's modulus
+    double A = truss.A;       // elements' cross area
+    double E = truss.E;       // Young's modulus
 
     // nodes coordinates definition (each node x and y) in one table as they are also dofs
-    const size_t nodesCount = 3;
-    const size_t dofsCount = 2 * nodesCount;
-    std::vector<double> coordinates= { 
-        0, 0,       // node 0
-        1, 0,       // node 1
-        1, 1,       // node 2
-    };
+    const size_t nodesCount = truss.nodesCount;
+    const size_t dofsCount = truss.dofsCount;
+    std::vector<double> coordinates = truss.coordinates;
 
     // nodes connections by the elements
-    const size_t elementsCount = 3;
-    uint topology[elementsCount][4] = {
-        { 0, 1, 2, 3 },     // node 1 to 1
-        { 2, 3, 4, 5 },     // node 1 to 2
-        { 0, 1, 4, 5 },     // node 0 to 2
-    };
+    const size_t elementsCount = truss.elementsCount;
+    arma::Mat<uint> topology = truss.topology;
 
     // constrains of each node and x and y directions (true=fixed, false=not fixed)
-    std::vector<bool> constrains = { 
-        true, true,     // node 0 fixed along x and y axis
-        true, true,     // node 1 fixed along x and y axis
-        false, false,   // node 2 not fixed along x and y axis
-    };
+    std::vector<bool> constrains = truss.constrains;
 
     // external forces applied to the truss
-    std::vector<double> externalForces = { 
-        0, 0,           // no forces at node 0
-        0, 0,           // no forces at node 1
-        2, -1,          // no forces at node 2
-    };
-
+    std::vector<double> externalForces = truss.externalForces;
     // global stiffness matrix declaration
     arma::Mat<double> globalStiffness(dofsCount, dofsCount);
 
@@ -61,7 +48,7 @@ int main()
     {
         std::cout << "ELEMENT " << element << std::endl;
         // element's degrees of freenoom matrix
-        std::array<uint, 4> dofs = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
+        std::array<uint, 4> dofs = { topology(element, 0), topology(element, 1), topology(element, 2), topology(element, 3) };
 
         // extract element's begin and end coordinates
         double x1 = coordinates.at(dofs[0]);
@@ -173,7 +160,7 @@ int main()
     for(size_t element=0; element<elementsCount; element++)
     {
         // degrees of freedom
-        std::array<uint, 4> dofs = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
+        std::array<uint, 4> dofs = { topology(element, 0), topology(element, 1), topology(element, 2), topology(element, 3) };
 
         // element's displacements in global CS
         arma::Col<double> elementDisplacements(4);
