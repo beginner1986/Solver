@@ -5,11 +5,14 @@
 #include <armadillo>
 
 #include "Truss.h"
+#include "Solver.h"
 
 int main()
 {
     // analyzed truss object
     Truss truss(1, 1);
+
+    Solver& solver = Solver::getInstance();
 
     // global stiffness matrix declaration
     arma::Mat<double> globalStiffness(truss.dofsCount, truss.dofsCount);

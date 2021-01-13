@@ -4,10 +4,9 @@
 #include <vector>
 #include <armadillo>
 
-class Truss
+struct Truss
 {
 public:
-    // material properties
     double A;       // elements' cross area
     double E;       // Young's modulus
 
