@@ -9,7 +9,7 @@
 int main()
 {
     // analyzed truss object
-    Truss truss;
+    Truss truss(1, 1);
 
     // global stiffness matrix declaration
     arma::Mat<double> globalStiffness(truss.dofsCount, truss.dofsCount);
