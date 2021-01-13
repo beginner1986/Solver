@@ -166,6 +166,7 @@ int main()
 
     // reaction forces caused by the constrains
     arma::Col<double> reactions(dofsCount, arma::fill::zeros);
+    std::vector<arma::Col<double> > internalForcesGlobalVectors;
 
     // elements internal forces
     for(size_t i=0; i<elementsCount; i++)
@@ -181,20 +182,46 @@ int main()
         }
 
         // elements' internal forces (stress)
-        arma::Col<double> elementInternalForces(4);
-        elementInternalForces = elementsStiffnessGlobalMatrices.at(i) * elementDisplacements;
+        arma::Col<double> internalForcesGlobal(4);
+        internalForcesGlobal = elementsStiffnessGlobalMatrices.at(i) * elementDisplacements;
+        internalForcesGlobalVectors.push_back(internalForcesGlobal);
 
         // if current dof is fixed, then include it's value into the reactions vector
         for(size_t j=0; j<4; j++)
+        {
             if(constrains[dofs[j]])
-                reactions(dofs[j]) += elementInternalForces(j);
+                reactions(dofs[j]) += internalForcesGlobal(j);
+        }
 
         std::cout << "ELEMENT " << i << " internal forces vector: " << std::endl;
-        std::cout << elementInternalForces << std::endl;
+        std::cout << internalForcesGlobal << std::endl;
     }
 
     std::cout << "Reaction forces: " << std::endl;
     std::cout << reactions << std::endl;
+
+    // internal forces in local CS
+    std::vector<arma::Col<double> > internalForcesLocalVectors;
+
+    std::cout << "Internal forces in local coordinate systems:" << std::endl;
+    for (size_t i = 0; i < elementsCount; i++)
+    {
+        arma::Col<double> internalForcesLocal(4);
+
+        arma::Mat<double> transformationMatrix = {
+            { coss[i], sins[i], 0, 0 },
+            { -sins[i], coss[i], 0, 0 },
+            { 0, 0, coss[i], sins[i] },
+            { 0, 0, -sins[i], coss[i] }
+        };
+        
+        solve(internalForcesLocal, transformationMatrix, internalForcesGlobalVectors.at(i));
+        internalForcesLocalVectors.push_back(internalForcesLocal);
+
+        std::cout << "\tELEMENT " << i << " :" << std::endl;
+        std::cout << internalForcesLocal << std::endl;
+    }
+
 
     return 0;
 }
