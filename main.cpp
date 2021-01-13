@@ -5,14 +5,14 @@
 
 int main()
 {
-    //matherial properties
+    // material properties
     double A = 1;       // elements' cross area
     double E = 1;       // Young's modulus
 
     // nodes coordinates definition (each node x and y) in one table as they are also dofs
     const size_t nodesCount = 3;
     const size_t dofsCount = 2 * nodesCount;
-    double coordinates[dofsCount] = { 
+    std::vector<double> coordinates= { 
         0, 0,       // node 0
         1, 0,       // node 1
         1, 1,       // node 2
@@ -56,17 +56,17 @@ int main()
     // elements' stiffness matrices in global CS stored for internal forces computation
     std::vector<arma::Mat<double> > elementsStiffnessGlobalMatrices;
 
-    for(size_t i=0; i<elementsCount; i++)
+    for(size_t element=0; element<elementsCount; element++)
     {
-        std::cout << "ELEMENT " << i << std::endl;
+        std::cout << "ELEMENT " << element << std::endl;
         // element's degrees of freenoom matrix
-        uint dofs[4] = { topology[i][0], topology[i][1], topology[i][2], topology[i][3] };
+        uint dofs[4] = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
 
         // extract element's begin and end coordinates
-        double x1 = coordinates[dofs[0]];
-        double y1 = coordinates[dofs[1]];
-        double x2 = coordinates[dofs[2]];
-        double y2 = coordinates[dofs[3]];
+        double x1 = coordinates.at(dofs[0]);
+        double y1 = coordinates.at(dofs[1]);
+        double x2 = coordinates.at(dofs[2]);
+        double y2 = coordinates.at(dofs[3]);
         std::cout << "\t(" << x1 << ", " << y1 << ") - (" << x2 << ", " << y2 << ")" << std::endl;
 
         // claculate the length and parameters for trigonometry
@@ -129,13 +129,13 @@ int main()
     arma::Mat<double> reducedStiffness = globalStiffness;
     arma::Col<double> reducedForces = globalForces;
 
-    for(int i=dofsCount-1; i>=0; i--)
+    for(int dof=dofsCount-1; dof>=0; dof--)
     {
-        if(constrains[i])
+        if(constrains[dof])
         {
-            reducedStiffness.shed_col(i);
-            reducedStiffness.shed_row(i);
-            reducedForces.shed_row(i);
+            reducedStiffness.shed_col(dof);
+            reducedStiffness.shed_row(dof);
+            reducedForces.shed_row(dof);
         }
     }
 
@@ -155,10 +155,10 @@ int main()
     arma::Col<double> dispalcementsGlobal(dofsCount, arma::fill::zeros);
     
     uint count = 0;
-    for(size_t i=0; i<dofsCount; i++)
+    for(size_t dof=0; dof<dofsCount; dof++)
     {
-        if(!constrains[i])
-            dispalcementsGlobal(i) = reducedDisplacements(count++);
+        if(!constrains[dof])
+            dispalcementsGlobal(dof) = reducedDisplacements(count++);
     }
 
     std::cout << "Global displacements vector: " << std::endl;
@@ -169,10 +169,10 @@ int main()
     std::vector<arma::Col<double> > internalForcesGlobalVectors;
 
     // elements internal forces
-    for(size_t i=0; i<elementsCount; i++)
+    for(size_t element=0; element<elementsCount; element++)
     {
         // degrees of freedom
-        uint dofs[4] = { topology[i][0], topology[i][1], topology[i][2], topology[i][3] };
+        uint dofs[4] = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
 
         // element's displacements in global CS
         arma::Col<double> elementDisplacements(4);
@@ -183,7 +183,7 @@ int main()
 
         // elements' internal forces (stress)
         arma::Col<double> internalForcesGlobal(4);
-        internalForcesGlobal = elementsStiffnessGlobalMatrices.at(i) * elementDisplacements;
+        internalForcesGlobal = elementsStiffnessGlobalMatrices.at(element) * elementDisplacements;
         internalForcesGlobalVectors.push_back(internalForcesGlobal);
 
         // if current dof is fixed, then include it's value into the reactions vector
@@ -193,7 +193,7 @@ int main()
                 reactions(dofs[j]) += internalForcesGlobal(j);
         }
 
-        std::cout << "ELEMENT " << i << " internal forces vector: " << std::endl;
+        std::cout << "ELEMENT " << element << " internal forces vector: " << std::endl;
         std::cout << internalForcesGlobal << std::endl;
     }
 
@@ -204,24 +204,23 @@ int main()
     std::vector<arma::Col<double> > internalForcesLocalVectors;
 
     std::cout << "Internal forces in local coordinate systems:" << std::endl;
-    for (size_t i = 0; i < elementsCount; i++)
+    for (size_t element = 0; element < elementsCount; element++)
     {
         arma::Col<double> internalForcesLocal(4);
 
         arma::Mat<double> transformationMatrix = {
-            { coss[i], sins[i], 0, 0 },
-            { -sins[i], coss[i], 0, 0 },
-            { 0, 0, coss[i], sins[i] },
-            { 0, 0, -sins[i], coss[i] }
+            { coss[element], sins[element], 0, 0 },
+            { -sins[element], coss[element], 0, 0 },
+            { 0, 0, coss[element], sins[element] },
+            { 0, 0, -sins[element], coss[element] }
         };
         
-        solve(internalForcesLocal, transformationMatrix, internalForcesGlobalVectors.at(i));
+        solve(internalForcesLocal, transformationMatrix, internalForcesGlobalVectors.at(element));
         internalForcesLocalVectors.push_back(internalForcesLocal);
 
-        std::cout << "\tELEMENT " << i << " :" << std::endl;
+        std::cout << "\tELEMENT " << element << " :" << std::endl;
         std::cout << internalForcesLocal << std::endl;
     }
-
 
     return 0;
 }
