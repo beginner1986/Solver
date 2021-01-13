@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <array>
 #include <cmath>
 #include <armadillo>
 
@@ -27,7 +28,7 @@ int main()
     };
 
     // constrains of each node and x and y directions (true=fixed, false=not fixed)
-    bool constrains[dofsCount] = { 
+    std::vector<bool> constrains = { 
         true, true,     // node 0 fixed along x and y axis
         true, true,     // node 1 fixed along x and y axis
         false, false,   // node 2 not fixed along x and y axis
@@ -60,7 +61,7 @@ int main()
     {
         std::cout << "ELEMENT " << element << std::endl;
         // element's degrees of freenoom matrix
-        uint dofs[4] = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
+        std::array<uint, 4> dofs = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
 
         // extract element's begin and end coordinates
         double x1 = coordinates.at(dofs[0]);
@@ -131,7 +132,7 @@ int main()
 
     for(int dof=dofsCount-1; dof>=0; dof--)
     {
-        if(constrains[dof])
+        if(constrains.at(dof))
         {
             reducedStiffness.shed_col(dof);
             reducedStiffness.shed_row(dof);
@@ -157,7 +158,7 @@ int main()
     uint count = 0;
     for(size_t dof=0; dof<dofsCount; dof++)
     {
-        if(!constrains[dof])
+        if(!constrains.at(dof))
             dispalcementsGlobal(dof) = reducedDisplacements(count++);
     }
 
@@ -172,7 +173,7 @@ int main()
     for(size_t element=0; element<elementsCount; element++)
     {
         // degrees of freedom
-        uint dofs[4] = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
+        std::array<uint, 4> dofs = { topology[element][0], topology[element][1], topology[element][2], topology[element][3] };
 
         // element's displacements in global CS
         arma::Col<double> elementDisplacements(4);
@@ -189,7 +190,7 @@ int main()
         // if current dof is fixed, then include it's value into the reactions vector
         for(size_t j=0; j<4; j++)
         {
-            if(constrains[dofs[j]])
+            if(constrains.at(dofs[j]))
                 reactions(dofs[j]) += internalForcesGlobal(j);
         }
 
