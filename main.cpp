@@ -7,15 +7,15 @@ int main()
 {
     //matherial properties
     double A = 1;       // elements' cross area
-    double E = 1;    // Young's modulus
+    double E = 1;       // Young's modulus
 
     // nodes coordinates definition (each node x and y) in one table as they are also dofs
     const size_t nodesCount = 3;
     const size_t dofsCount = 2 * nodesCount;
     double coordinates[dofsCount] = { 
         0, 0,       // node 0
-        1, 0,     // node 1
-        1, 1,   // node 2
+        1, 0,       // node 1
+        1, 1,       // node 2
     };
 
     // nodes connections by the elements
@@ -37,7 +37,7 @@ int main()
     std::vector<double> externalForces = { 
         0, 0,           // no forces at node 0
         0, 0,           // no forces at node 1
-        2, -1,    // no forces at node 2
+        2, -1,          // no forces at node 2
     };
 
     // global stiffness matrix declaration
@@ -52,6 +52,9 @@ int main()
 
     // sinus, cosinus and lenghts ot each element is stored for further stress computation
     std::vector<double> sins, coss, lengths;
+
+    // elements' stiffness matrices in global CS stored for internal forces computation
+    std::vector<arma::Mat<double> > elementsStiffnessGlobalMatrices;
 
     for(size_t i=0; i<elementsCount; i++)
     {
@@ -103,6 +106,7 @@ int main()
 
         // calculate element's stiffnesss matrix in global CS
         arma::Mat<double> elementStiffnessGlobal = transtofrmationMatrix * k;
+        elementsStiffnessGlobalMatrices.push_back(elementStiffnessGlobal);
 
         std::cout << "\tElement stiffness matrix in global CS:" << std::endl;
         std::cout << elementStiffnessGlobal << std::endl;
@@ -148,17 +152,17 @@ int main()
     std::cout << reducedDisplacements << std::endl;
 
     // global displacements' vector
-    arma::Col<double> dispalcements(dofsCount, arma::fill::zeros);
+    arma::Col<double> dispalcementsGlobal(dofsCount, arma::fill::zeros);
     
     uint count = 0;
     for(size_t i=0; i<dofsCount; i++)
     {
         if(!constrains[i])
-            dispalcements(i) = reducedDisplacements(count++);
+            dispalcementsGlobal(i) = reducedDisplacements(count++);
     }
 
     std::cout << "Global displacements vector: " << std::endl;
-    std::cout << dispalcements << std::endl;
+    std::cout << dispalcementsGlobal << std::endl;
 
     // elements internal forces
     for(size_t i=0; i<elementsCount; i++)
@@ -166,22 +170,16 @@ int main()
         // degrees of freedom
         uint dofs[4] = { topology[i][0], topology[i][1], topology[i][2], topology[i][3] };
 
-        // transformation global forces to elements' internal forces
-        arma::Mat<double> transformationMatrix = {
-            { coss[i], sins[i], 0, 0},
-            { -sins[i], coss[i], 0, 0},
-            { 0, 0, coss[i], sins[i] },
-            { 0, 0, -sins[i], coss[i] }
-        };
+        // element's displacements in global CS
+        arma::Col<double> elementDisplacements(4);
+        for(size_t j=0; j<4; j++)
+        {
+            elementDisplacements(j) = dispalcementsGlobal(dofs[j]);
+        }
 
-        // forces applied to the element in global CS
-        arma::Col<double> elementGlobalForces(4);
-        for(size_t i=0; i<4; i++)
-            elementGlobalForces(i) = globalForces(dofs[i]);
-
-        // elements' internal stress
+        // elements' internal forces (stress)
         arma::Col<double> elementInternalForces(4);
-        arma::solve(elementInternalForces, transformationMatrix, elementGlobalForces);
+        elementInternalForces = elementsStiffnessGlobalMatrices.at(i) * elementDisplacements;
         std::cout << "ELEMENT " << i << " internal forces vector: " << std::endl;
         std::cout << elementInternalForces << std::endl;
     }
