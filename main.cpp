@@ -164,6 +164,9 @@ int main()
     std::cout << "Global displacements vector: " << std::endl;
     std::cout << dispalcementsGlobal << std::endl;
 
+    // reaction forces caused by the constrains
+    arma::Col<double> reactions(dofsCount, arma::fill::zeros);
+
     // elements internal forces
     for(size_t i=0; i<elementsCount; i++)
     {
@@ -180,9 +183,18 @@ int main()
         // elements' internal forces (stress)
         arma::Col<double> elementInternalForces(4);
         elementInternalForces = elementsStiffnessGlobalMatrices.at(i) * elementDisplacements;
+
+        // if current dof is fixed, then include it's value into the reactions vector
+        for(size_t j=0; j<4; j++)
+            if(constrains[dofs[j]])
+                reactions(dofs[j]) += elementInternalForces(j);
+
         std::cout << "ELEMENT " << i << " internal forces vector: " << std::endl;
         std::cout << elementInternalForces << std::endl;
     }
+
+    std::cout << "Reaction forces: " << std::endl;
+    std::cout << reactions << std::endl;
 
     return 0;
 }
