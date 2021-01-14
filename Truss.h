@@ -9,20 +9,16 @@ struct Truss
 public:
     double A;       // elements' cross area
     double E;       // Young's modulus
+    
+    std::vector<double> coordinates;    // nodes coordinates definition (each node x and y)
+    size_t dofsCount;                   // degrees of freedom number   
 
-    // nodes coordinates definition (each node x and y) in one table as they are also dofs
-    std::vector<double> coordinates;
-    size_t dofsCount;
-
-    // nodes connections by the elements
-    arma::Mat<uint> topology;
+    arma::Mat<uint> topology;           // nodes connections by the elements
     size_t elementsCount;
 
-    // constrains of each node and x and y directions (true=fixed, false=not fixed)
-    std::vector<bool> constrains;
+    std::vector<bool> constrains;       // if true then dof is fixed else it's not fixed
 
-    // external forces applied to the truss
-    std::vector<double> externalForces;
+    std::vector<double> externalForces; // external forces applied to the truss
 
     Truss(double A, double E);
 };

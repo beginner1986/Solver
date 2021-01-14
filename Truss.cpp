@@ -2,7 +2,7 @@
 
 Truss::Truss(double A, double E) : A(A), E(E)
 {
-    coordinates= { 
+    coordinates = { 
         0, 0,       // node 0
         1, 0,       // node 1
         1, 1,       // node 2
