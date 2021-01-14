@@ -47,13 +47,11 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double> > Solve
         double x2 = truss.coordinates.at(dofs[2]);
         double y2 = truss.coordinates.at(dofs[3]);
 
-        // claculate the length and parameters for trigonometry
         double dx = abs(x2 - x1);
         double dy = abs(y2 - y1);
         double length = sqrt(dx * dx + dy * dy);
         lengths.push_back(length);
 
-        // cosinus and sinus of the angle between local and global CS
         double cos = dx / length;
         coss.push_back(cos);
         double sin = dy / length;
@@ -65,7 +63,6 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double> > Solve
 
 std::vector<arma::Mat<double> > Solver::calculateElementsStiffnessGlobal()
 {
-    // element stiffness matrices in global CS
     std::vector<arma::Mat<double> > result;
 
     // template for element stiffness matrices
@@ -81,11 +78,9 @@ std::vector<arma::Mat<double> > Solver::calculateElementsStiffnessGlobal()
         // element stiffness value (scalar)
         double k = (truss.A * truss.E) / lengths.at(element);
 
-        // element's stfiffness matrix in local CS
-        arma::Mat<double> elementStiffnessLocal = localStiffnessTemplate;
-        elementStiffnessLocal *= k;
+        arma::Mat<double> localElementStiffness = localStiffnessTemplate;
+        localElementStiffness *= k;
 
-        // transformation matrix
         double sin = sins.at(element);
         double cos = coss.at(element);
 
@@ -96,7 +91,6 @@ std::vector<arma::Mat<double> > Solver::calculateElementsStiffnessGlobal()
             { -cos * sin, -sin * sin, cos * sin, sin * sin }
         };
 
-        // calculate element's stiffnesss matrix in global CS
         arma::Mat<double> elementStiffnessGlobal = transtofrmationMatrix * k;
         result.push_back(elementStiffnessGlobal);
     }
@@ -119,8 +113,13 @@ arma::Mat<double> Solver::calculateGlobalStiffnessMatrix()
         };
 
         for(size_t i=0; i<4; i++)
+        {
             for(size_t j=0; j<4; j++)
-                result(dofs[i], dofs[j]) += globalElementsStiffness.at(element)(i, j);
+            {
+                arma::Mat<double>& elementStiffes = globalElementsStiffness.at(element);
+                result(dofs[i], dofs[j]) += elementStiffes(i, j);
+            }
+        }
     }
 
     return result;
@@ -128,7 +127,6 @@ arma::Mat<double> Solver::calculateGlobalStiffnessMatrix()
 
 arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double>& globalStiffnessMatrix, arma::Col<double>& globalForces)
 {
-    // global stiffness matrix and load vector reduction according to given constrains
     arma::Mat<double> reducedStiffness = globalStiffnessMatrix;
     arma::Col<double> reducedForces = globalForces;
 
@@ -142,18 +140,19 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double>& 
         }
     }
 
-    // reduced displacements' vector
     arma::Col<double> reducedDisplacements(truss.dofsCount);
     arma::solve(reducedDisplacements, reducedStiffness, reducedForces);
 
-    // global displacements' vector
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
     
     uint count = 0;
     for(size_t dof=0; dof<truss.dofsCount; dof++)
     {
         if(!truss.constrains.at(dof))
-            globalDispalcements(dof) = reducedDisplacements(count++);
+        {
+            globalDispalcements(dof) = reducedDisplacements(count);
+            count++;
+        }
     }
 
     return globalDispalcements;
@@ -163,7 +162,6 @@ std::vector<arma::Col<double> > Solver::calculateGlobalInternalForces()
 {
     std::vector<arma::Col<double> > result;
 
-    // elements internal forces
     for(size_t element=0; element<truss.elementsCount; element++)
     {
         // degrees of freedom
@@ -174,14 +172,14 @@ std::vector<arma::Col<double> > Solver::calculateGlobalInternalForces()
             truss.topology(element, 3) 
         };
 
-        // element's displacements in global CS
-        arma::Col<double> elementDisplacements(4);
+        arma::Col<double> globalElementDisplacements(4);
         for(size_t j=0; j<4; j++)
-            elementDisplacements(j) = globalDisplacements(dofs[j]);
+        {
+            globalElementDisplacements(j) = globalDisplacements(dofs[j]);
+        }
         
-        // elements' internal forces (stress)
         arma::Col<double> globalElementInternalForces(4);
-        globalElementInternalForces = globalElementsStiffness.at(element) * elementDisplacements;
+        globalElementInternalForces = globalElementsStiffness.at(element) * globalElementDisplacements;
         result.push_back(globalElementInternalForces);
     }
 
@@ -202,11 +200,13 @@ arma::Col<double> Solver::calculateReactionForces(std::vector<arma::Col<double> 
             truss.topology(element, 3) 
         };
 
-        // if current dof is fixed, then include it's value into the reactions vector
         for(size_t i=0; i<4; i++)
         {
             if(truss.constrains.at(dofs[i]))
-                result(dofs[i]) += globalInternalForces.at(element)(i);
+            {
+                arma::Col<double>& globalElementsInternalForces = globalInternalForces.at(element);
+                result(dofs[i]) += globalElementsInternalForces(i);
+            }
         }
     }
 

@@ -1,7 +1,9 @@
 #ifndef __SOLVER_H__
 #define __SOLVER_H__
 
+#include <iostream>
 #include <vector>
+#include <armadillo>
 
 #include "Truss.h"
 
