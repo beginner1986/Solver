@@ -2,6 +2,7 @@
 #define __DRAWER_H__
 
 #include <algorithm>
+#include <armadillo>
 
 #include "lib/simple_svg_1.0.0.hpp"
 #include "Truss.h"
@@ -12,7 +13,7 @@ private:
     const Truss& truss;
     std::string fileName;
 
-    const double offset = 10;
+    const double offset = 50;
     const uint scale = 4;
 
 public:
