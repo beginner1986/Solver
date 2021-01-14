@@ -1,29 +1,29 @@
 #include "Solver.h"
 
-Solver::Solver(const Truss& truss) : truss(truss) 
+void Solver::solve()
 {
-    std::cout << "Elements' sin, cos and length values calculation in progress..." << std::endl;
+    std::cout << "\tElements' sin, cos and length values calculation in progress..." << std::endl;
     std::tie(sins, coss, lengths) = calculateSinCosLen();
 
-    std::cout << "Elements' stiffness matrices in global CS calculation in progerss..." << std::endl;
+    std::cout << "\tElements' stiffness matrices in global CS calculation in progerss..." << std::endl;
     globalElementsStiffness = calculateElementsStiffnessGlobal();  
 
-    std::cout << "Global stiffness matrix composition in progerss..." << std::endl;
+    std::cout << "\tGlobal stiffness matrix composition in progerss..." << std::endl;
     globalStiffnessMatrix = calculateGlobalStiffnessMatrix();
 
-    std::cout << "Global forces vector initialization in progerss..." << std::endl;
+    std::cout << "\tGlobal forces vector initialization in progerss..." << std::endl;
     globalForces = truss.externalForces;
 
-    std::cout << "Displacements in global CS calculation in progerss..." << std::endl;
+    std::cout << "\tDisplacements in global CS calculation in progerss..." << std::endl;
     globalDisplacements = calculateGlobalDisplacements(globalStiffnessMatrix, globalForces);
 
-    std::cout << "Elements' internal forces in global CS in progerss..." << std::endl;
+    std::cout << "\tElements' internal forces in global CS in progerss..." << std::endl;
     std::vector<arma::Col<double> > globalInternalForces = calculateGlobalInternalForces();
 
-    std::cout << "Reaction forces calculation in progerss..." << std::endl;
+    std::cout << "\tReaction forces calculation in progerss..." << std::endl;
     reactionForces = calculateReactionForces(globalInternalForces);
 
-    std::cout << "Elements' internal stress calculation in progerss..." << std::endl;
+    std::cout << "\tElements' internal stress calculation in progerss..." << std::endl;
     elementsInternalStress = calculateElementsInternalStress(globalInternalForces);
 }
 
@@ -217,7 +217,6 @@ std::vector<arma::Col<double> > Solver::calculateElementsInternalStress(std::vec
 {
     std::vector<arma::Col<double> > result;
 
-    std::cout << "Internal forces in local coordinate systems:" << std::endl;
     for (size_t element = 0; element < truss.elementsCount; element++)
     {
         arma::Col<double> internalForcesLocal(4);
@@ -229,7 +228,7 @@ std::vector<arma::Col<double> > Solver::calculateElementsInternalStress(std::vec
             { 0, 0, -sins[element], coss[element] }
         };
         
-        solve(internalForcesLocal, transformationMatrix, globalInternalForces.at(element));
+        arma::solve(internalForcesLocal, transformationMatrix, globalInternalForces.at(element));
         result.push_back(internalForcesLocal);
     }
 
