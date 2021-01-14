@@ -15,6 +15,7 @@ private:
 
     const double offset = 50;
     const uint scale = 4;
+    const double forceLineLnegth = 40;
 
 public:
     Drawer(const Truss& truss, std::string fileName);

@@ -34,6 +34,39 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
         document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Blue));
     }
 
+    // draw external forces
+    for (size_t dof = 0; dof < truss.dofsCount; dof++)
+    {
+        double force = truss.externalForces.at(dof);
+
+        if(force != 0)
+        {
+            double x2 = truss.coordinates.at(dof);
+            double y2 = truss.coordinates.at(dof);
+            x2 = x2 * scale + offset;
+            y2 = y2 * scale + offset;
+            double x1 = x2;
+            double y1 = y2;
+
+            if(dof % 2 == 0)
+            {
+                if(force > 0)
+                    x1 -= forceLineLnegth;
+                else
+                    x1 += forceLineLnegth;
+            }
+            else
+            {
+                if(force > 0)
+                    y1 -= forceLineLnegth;
+                else
+                    y1 += forceLineLnegth;
+            }
+
+            document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Red));
+        }
+    }
+
     document.save();
 }
 
