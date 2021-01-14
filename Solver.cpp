@@ -2,10 +2,29 @@
 
 Solver::Solver(const Truss& truss) : truss(truss) 
 {
+    std::cout << "Elements' sin, cos and length values calculation in progress..." << std::endl;
     std::tie(sins, coss, lengths) = calculateSinCosLen();
-    elementsStiffnessGlobal = calculateElementsStiffnessGlobal();  
-    globalStiffnessMatrix = calculateGlobalStiffnessMatrix(elementsStiffnessGlobal);
+
+    std::cout << "Elements' stiffness matrices in global CS calculation in progerss..." << std::endl;
+    globalElementsStiffness = calculateElementsStiffnessGlobal();  
+
+    std::cout << "Global stiffness matrix composition in progerss..." << std::endl;
+    globalStiffnessMatrix = calculateGlobalStiffnessMatrix();
+
+    std::cout << "Global forces vector initialization in progerss..." << std::endl;
     globalForces = truss.externalForces;
+
+    std::cout << "Displacements in global CS calculation in progerss..." << std::endl;
+    globalDisplacements = calculateGlobalDisplacements(globalStiffnessMatrix, globalForces);
+
+    std::cout << "Elements' internal forces in global CS in progerss..." << std::endl;
+    std::vector<arma::Col<double> > globalInternalForces = calculateGlobalInternalForces();
+
+    std::cout << "Reaction forces calculation in progerss..." << std::endl;
+    reactionForces = calculateReactionForces(globalInternalForces);
+
+    std::cout << "Elements' internal stress calculation in progerss..." << std::endl;
+    elementsInternalStress = calculateElementsInternalStress(globalInternalForces);
 }
 
 std::tuple<std::vector<double>, std::vector<double>, std::vector<double> > Solver::calculateSinCosLen() 
@@ -39,9 +58,9 @@ std::tuple<std::vector<double>, std::vector<double>, std::vector<double> > Solve
         coss.push_back(cos);
         double sin = dy / length;
         sins.push_back(sin);
-
-        return std::make_tuple(sins, coss, lengths);
     }
+
+    return std::make_tuple(sins, coss, lengths);
 }
 
 std::vector<arma::Mat<double> > Solver::calculateElementsStiffnessGlobal()
@@ -66,10 +85,10 @@ std::vector<arma::Mat<double> > Solver::calculateElementsStiffnessGlobal()
         arma::Mat<double> elementStiffnessLocal = localStiffnessTemplate;
         elementStiffnessLocal *= k;
 
+        // transformation matrix
         double sin = sins.at(element);
         double cos = coss.at(element);
 
-        // transformation matrix
         arma::Mat<double> transtofrmationMatrix = {
             { cos * cos, cos * sin, -cos * cos, -cos * sin },
             { cos * sin, sin * sin, -cos * sin, -sin * sin },
@@ -85,7 +104,7 @@ std::vector<arma::Mat<double> > Solver::calculateElementsStiffnessGlobal()
     return result;
 }
 
-arma::Mat<double> Solver::calculateGlobalStiffnessMatrix(const std::vector<arma::Mat<double> >& elementsStiffnessGlobal) 
+arma::Mat<double> Solver::calculateGlobalStiffnessMatrix() 
 {
     arma::Mat<double> result(truss.dofsCount, truss.dofsCount, arma::fill::zeros);
 
@@ -101,8 +120,10 @@ arma::Mat<double> Solver::calculateGlobalStiffnessMatrix(const std::vector<arma:
 
         for(size_t i=0; i<4; i++)
             for(size_t j=0; j<4; j++)
-                result(dofs[i], dofs[j]) += elementsStiffnessGlobal.at(element)(i, j);
+                result(dofs[i], dofs[j]) += globalElementsStiffness.at(element)(i, j);
     }
+
+    return result;
 }
 
 arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double>& globalStiffnessMatrix, arma::Col<double>& globalForces)
@@ -136,4 +157,81 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double>& 
     }
 
     return globalDispalcements;
+}
+
+std::vector<arma::Col<double> > Solver::calculateGlobalInternalForces() 
+{
+    std::vector<arma::Col<double> > result;
+
+    // elements internal forces
+    for(size_t element=0; element<truss.elementsCount; element++)
+    {
+        // degrees of freedom
+        std::array<uint, 4> dofs = { 
+            truss.topology(element, 0), 
+            truss.topology(element, 1), 
+            truss.topology(element, 2), 
+            truss.topology(element, 3) 
+        };
+
+        // element's displacements in global CS
+        arma::Col<double> elementDisplacements(4);
+        for(size_t j=0; j<4; j++)
+            elementDisplacements(j) = globalDisplacements(dofs[j]);
+        
+        // elements' internal forces (stress)
+        arma::Col<double> globalElementInternalForces(4);
+        globalElementInternalForces = globalElementsStiffness.at(element) * elementDisplacements;
+        result.push_back(globalElementInternalForces);
+    }
+
+    return result;
+}
+
+arma::Col<double> Solver::calculateReactionForces(std::vector<arma::Col<double> >& globalInternalForces) 
+{
+    arma::Col<double> result(truss.dofsCount, arma::fill::zeros);
+    
+    for(size_t element=0; element<truss.elementsCount; element++)
+    {
+        // degrees of freedom
+        std::array<uint, 4> dofs = { 
+            truss.topology(element, 0), 
+            truss.topology(element, 1), 
+            truss.topology(element, 2), 
+            truss.topology(element, 3) 
+        };
+
+        // if current dof is fixed, then include it's value into the reactions vector
+        for(size_t i=0; i<4; i++)
+        {
+            if(truss.constrains.at(dofs[i]))
+                result(dofs[i]) += globalInternalForces.at(element)(i);
+        }
+    }
+
+    return result;
+}
+
+std::vector<arma::Col<double> > Solver::calculateElementsInternalStress(std::vector<arma::Col<double> >& globalInternalForces) 
+{
+    std::vector<arma::Col<double> > result;
+
+    std::cout << "Internal forces in local coordinate systems:" << std::endl;
+    for (size_t element = 0; element < truss.elementsCount; element++)
+    {
+        arma::Col<double> internalForcesLocal(4);
+
+        arma::Mat<double> transformationMatrix = {
+            { coss[element], sins[element], 0, 0 },
+            { -sins[element], coss[element], 0, 0 },
+            { 0, 0, coss[element], sins[element] },
+            { 0, 0, -sins[element], coss[element] }
+        };
+        
+        solve(internalForcesLocal, transformationMatrix, globalInternalForces.at(element));
+        result.push_back(internalForcesLocal);
+    }
+
+    return result;
 }
