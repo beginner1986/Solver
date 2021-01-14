@@ -4,11 +4,12 @@ Truss::Truss(double A, double E) : A(A), E(E)
 {
     coordinates = { 
         0, 0,       // node 0
-        1, 0,       // node 1
-        1, 1,       // node 2
+        100, 0,     // node 1
+        100, 100,   // node 2
     };
 
     dofsCount = coordinates.size();
+    nodesCount = dofsCount / 2;
 
     topology = {
         { 0, 1, 2, 3 },     // node 1 to 1

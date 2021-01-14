@@ -1,12 +1,25 @@
 #ifndef __DRAWER_H__
 #define __DRAWER_H__
 
+#include <algorithm>
+
 #include "lib/simple_svg_1.0.0.hpp"
+#include "Truss.h"
 
 class Drawer
 {
+private:
+    const Truss& truss;
+    std::string fileName;
+
+    const double offset = 10;
+    const uint scale = 4;
+
 public:
-    Drawer();
+    Drawer(const Truss& truss, std::string fileName);
+
+private:
+    svg::Dimensions calculateDimensions();
 };
 
 #endif // __DRAWER_H__

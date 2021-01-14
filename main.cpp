@@ -11,6 +11,9 @@ int main()
     std::cout << "Truss initialization..." << std::endl;
     Truss truss(1, 1);
 
+    std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
+    Drawer drawer(truss, "input.svg");
+
     std::cout << "Solving the truss..." << std::endl;
     Solver solver(truss);
     solver.solve();
@@ -33,9 +36,6 @@ int main()
         std::cout << "\tElement " << i << std::endl;
         std::cout << elementsInternalStress.at(i) << std::endl;
     }
-
-    std::cout << "Draw a test svg" << std::endl;
-    Drawer drawer;
 
     return 0;
 }
