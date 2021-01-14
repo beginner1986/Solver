@@ -4,6 +4,7 @@
 
 #include "Truss.h"
 #include "Solver.h"
+#include "Drawer.h"
 
 int main()
 {
@@ -32,6 +33,9 @@ int main()
         std::cout << "\tElement " << i << std::endl;
         std::cout << elementsInternalStress.at(i) << std::endl;
     }
+
+    std::cout << "Draw a test svg" << std::endl;
+    Drawer drawer;
 
     return 0;
 }

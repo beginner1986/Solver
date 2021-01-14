@@ -1,5 +1,8 @@
 # Executable project
 solver
 
+# Generated vector graphics
+*.svg
+
 # Visual Studio Code files
 .vscode/
