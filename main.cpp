@@ -17,7 +17,7 @@ int main()
     arma::Col<double> globalForces = solver.getGlobalForces();
     arma::Col<double> globalDisplacements = solver.getGlobalDisplacements();
     arma::Col<double> reactionForces = solver.getReactionForces();
-    std::vector<arma::Col<double> > elementsInternalStress = solver.getElementsInternalStress();
+    std::vector<arma::Col<double>> elementsInternalStress = solver.getElementsInternalStress();
 
     std::cout << "RESULTS" << std::endl;
     std::cout << "Global forces vector:" << std::endl;
@@ -27,7 +27,7 @@ int main()
     std::cout << "Reaction forces vector:" << std::endl;
     std::cout << reactionForces << std::endl;
     std::cout << "Elements internal stress vectors:" << std::endl;
-    for(size_t i=0; i<elementsInternalStress.size(); i++)
+    for (size_t i = 0; i < elementsInternalStress.size(); i++)
     {
         std::cout << "\tElement " << i << std::endl;
         std::cout << elementsInternalStress.at(i) << std::endl;
