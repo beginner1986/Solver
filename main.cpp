@@ -4,11 +4,15 @@
 
 #include "Truss.h"
 #include "Solver.h"
+#include "Drawer.h"
 
 int main()
 {
     std::cout << "Truss initialization..." << std::endl;
     Truss truss(1, 1);
+
+    std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
+    Drawer drawer(truss, "input.svg");
 
     std::cout << "Solving the truss..." << std::endl;
     Solver solver(truss);

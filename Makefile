@@ -5,7 +5,7 @@ FLAGS = -Wall -pedantic -O3 --std=c++11 -larmadillo
 FLAGS_OMP = #-fopenmp
 
 #Source files that should be compiled
-SOURCES = main.cpp Truss.cpp Solver.cpp
+SOURCES = main.cpp Truss.cpp Solver.cpp Drawer.cpp
 
 #Output files that should be cleared
 OUTPUT = solver
@@ -23,6 +23,7 @@ build: solver
 solver:
 	$(CCPLUS) $(SOURCES) -o $(OUTPUT) $(FLAGS) $(FLAGS_OMP)
 
-#Rule to clear out output files
+#Rule to clear out output files and generated vector graphics
 clean:
 	rm -rf $(OUTPUT)
+	rm -rf *.svg

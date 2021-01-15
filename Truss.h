@@ -11,7 +11,8 @@ public:
     double E;       // Young's modulus
     
     std::vector<double> coordinates;    // nodes coordinates definition (each node x and y)
-    size_t dofsCount;                   // degrees of freedom number   
+    size_t dofsCount;                   // degrees of freedom number
+    size_t nodesCount;
 
     arma::Mat<uint> topology;           // nodes connections by the elements
     size_t elementsCount;
