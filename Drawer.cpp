@@ -37,6 +37,8 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
     // draw external forces
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
+        // TODO: draw the force on the outer side of the truss
+
         double force = truss.externalForces.at(dof);
 
         if(force != 0)
@@ -59,26 +61,26 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             // arrowhead
             double arrowX1, arrowY1, arrowX2, arrowY2;
 
-            if(dof % 2 == 0)
+            if(dof % 2 == 0)    // horizontal
             {
                 arrowY1 = y2 + arrowThickness / 2;  
                 arrowY2 = y2 - arrowThickness / 2;
 
-                if(force > 0)
+                if(force > 0)   // right
                     arrowX1 = x2 - arrowLength;
-                else
+                else    //left
                     arrowX1 = x2 + arrowLength;
                 
                 arrowX2 = arrowX1;
             }
-            else
+            else    // vertical
             {
                 arrowX1 = x2 + arrowThickness / 2;
                 arrowX2 = x2 - arrowThickness / 2;
 
-                if(force > 0)
+                if(force > 0)   // up
                     arrowY1 = y2 - arrowLength;
-                else
+                else    // down
                     arrowY1 = y2 + arrowLength;
                 
                 arrowY2 = arrowY1;
@@ -87,6 +89,42 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             svg::Polygon arrow(svg::Fill(svg::Color::Red));
             arrow << svg::Point(x2, y2) << svg::Point(arrowX1, arrowY1) << svg::Point(arrowX2, arrowY2);
             document << arrow;
+        }
+    }
+
+    // draw constrains
+    for(size_t dof=0; dof<truss.dofsCount; dof+=2)
+    {
+        if(truss.constrains.at(dof))
+        {
+            /*
+            TODO:
+            - not duplicate constrains on one node (x and y) - one-axis and two-axis constrains
+            - horizontal and vertical fix orientation
+            - constrains drawing on the outer side of the truss
+            - "ground lines" below the fix
+            */
+            double x, y;
+
+            if(dof % 2 == 0)    // x axis
+            {
+                x = truss.coordinates.at(dof);
+                y = truss.coordinates.at(dof + 1);
+            }
+            else    // y axis
+            {
+                x = truss.coordinates.at(dof - 1);
+                y = truss.coordinates.at(dof);
+            }
+            x = x * scale + offset;
+            y = y * scale + offset;
+            
+            svg::Polyline fix(svg::Stroke(2, svg::Color::Green));
+            fix << svg::Point(x, y) 
+                << svg::Point(x - fixSize / 2, y - fixSize / 2) 
+                << svg::Point(x + fixSize / 2, y - fixSize / 2)
+                << svg::Point(x, y);
+            document << fix;
         }
     }
 

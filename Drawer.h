@@ -20,6 +20,7 @@ private:
     const double forceLineLnegth = 80;
     const double arrowLength = 30;
     const double arrowThickness = 10;
+    const double fixSize = 40;
 
 public:
     Drawer(const Truss& truss, std::string fileName);
