@@ -102,7 +102,6 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             - not duplicate constrains on one node (x and y) - one-axis and two-axis constrains
             - horizontal and vertical fix orientation
             - constrains drawing on the outer side of the truss
-            - "ground lines" below the fix
             */
             double x, y;
 
@@ -119,12 +118,31 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             x = x * scale + offset;
             y = y * scale + offset;
             
+            // triangle with underline
             svg::Polyline fix(svg::Stroke(2, svg::Color::Green));
-            fix << svg::Point(x, y) 
-                << svg::Point(x - fixSize / 2, y - fixSize / 2) 
+            fix << svg::Point(x - fixSize / 2, y - fixSize / 2) 
+                << svg::Point(x, y)
                 << svg::Point(x + fixSize / 2, y - fixSize / 2)
-                << svg::Point(x, y);
+                << svg::Point(x + fixSize * 3/4, y - fixSize / 2)
+                << svg::Point(x - fixSize * 3/4, y - fixSize / 2);
             document << fix;
+
+            // diagonal lines
+            document << svg::Line(
+                svg::Point(x - fixSize * 3/5, y - fixSize), 
+                svg::Point(x - fixSize * 2/5, y - fixSize / 2), 
+                svg::Stroke(2, svg::Color::Green)
+            );
+            document << svg::Line(
+                svg::Point(x - fixSize / 5, y - fixSize), 
+                svg::Point(x, y - fixSize / 2), 
+                svg::Stroke(2, svg::Color::Green)
+            );
+            document << svg::Line(
+                svg::Point(x + fixSize * 1/5, y - fixSize), 
+                svg::Point(x + fixSize * 2/5, y - fixSize / 2), 
+                svg::Stroke(2, svg::Color::Green)
+            );
         }
     }
 
