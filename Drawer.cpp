@@ -14,7 +14,7 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
         x = x * scale + offset;
         y = y * scale + offset;
 
-        document << svg::Circle(svg::Point(x, y), 5, svg::Fill(svg::Color::Black));
+        document << svg::Circle(svg::Point(x, y), 10, svg::Fill(svg::Color::Black));
     }
 
     // draw the elements
@@ -41,6 +41,7 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
 
         if(force != 0)
         {
+            // force line coordinates - not scaled
             double x2 = truss.coordinates.at(dof);
             double y2 = truss.coordinates.at(dof);
             x2 = x2 * scale + offset;
@@ -49,21 +50,43 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             double y1 = y2;
 
             if(dof % 2 == 0)
+                x1 += (force > 0) ? -forceLineLnegth : forceLineLnegth;
+            else
+                y1 += (force > 0) ? -forceLineLnegth : forceLineLnegth;
+
+            document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Red));
+
+            // arrowhead
+            double arrowX1, arrowY1, arrowX2, arrowY2;
+
+            if(dof % 2 == 0)
             {
+                arrowY1 = y2 + arrowThickness / 2;  
+                arrowY2 = y2 - arrowThickness / 2;
+
                 if(force > 0)
-                    x1 -= forceLineLnegth;
+                    arrowX1 = x2 - arrowLength;
                 else
-                    x1 += forceLineLnegth;
+                    arrowX1 = x2 + arrowLength;
+                
+                arrowX2 = arrowX1;
             }
             else
             {
+                arrowX1 = x2 + arrowThickness / 2;
+                arrowX2 = x2 - arrowThickness / 2;
+
                 if(force > 0)
-                    y1 -= forceLineLnegth;
+                    arrowY1 = y2 - arrowLength;
                 else
-                    y1 += forceLineLnegth;
+                    arrowY1 = y2 + arrowLength;
+                
+                arrowY2 = arrowY1;
             }
 
-            document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Red));
+            svg::Polygon arrow(svg::Fill(svg::Color::Red));
+            arrow << svg::Point(x2, y2) << svg::Point(arrowX1, arrowY1) << svg::Point(arrowX2, arrowY2);
+            document << arrow;
         }
     }
 
