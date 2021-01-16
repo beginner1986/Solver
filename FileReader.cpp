@@ -80,11 +80,16 @@ std::vector<double> FileReader::readCoordinates()
 
     iss >> word;
     size_t dofsCount = static_cast<size_t>(std::stoi(word));
-    for(size_t dof = 0; dof < dofsCount; dof++)
+    for(size_t node = 0; node < dofsCount/2; node++)
     {
-        iss >> word;
-        double coord = std::stod(word);
-        coordinates.push_back(coord);
+        std::getline(file, line);
+        iss = std::istringstream(line);
+        for (size_t i = 0; i < 2; i++)
+        {
+            iss >> word;
+            double coord = std::stod(word);
+            coordinates.push_back(coord);
+        }
     }
 
     return coordinates;
@@ -92,7 +97,33 @@ std::vector<double> FileReader::readCoordinates()
 
 arma::Mat<uint> FileReader::readTopology() 
 {
-    
+    std::string line, word;
+    std::getline(file, line);
+    std::istringstream iss(line);
+
+    iss >> word;
+    if(word != "BARS")
+    {
+        std::cout << "Incorrect BARS line!" << std::endl;
+        fail();
+    }
+    iss >> word;
+    size_t elementsCount = static_cast<size_t>(std::stoi(word));
+    arma::Mat<uint> topology(elementsCount, 4);
+
+    for(size_t element=0; element < elementsCount; element++)
+    {
+        std::getline(file, line);
+        iss = std::istringstream(line);
+
+        for(int dof=0; dof<4; dof++)
+        {
+            iss >> word;
+            topology(element, dof) = static_cast<uint>(std::stoi(word));
+        }
+    }
+
+    return topology;
 }
 
 std::vector<bool> FileReader::readConstrains() 
