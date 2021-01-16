@@ -3,9 +3,46 @@
 Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileName(fileName)
 {
     svg::Dimensions dimensions = calculateDimensions();
-    svg::Document document(fileName, svg::Layout(dimensions, svg::Layout::BottomLeft));
+    document = svg::Document(fileName, svg::Layout(dimensions, svg::Layout::BottomLeft));
+}
 
-    // draw the nodes
+void Drawer::draw() 
+{
+    drawNodes();
+    drawElements();
+    drawExternalForces();
+    drawConstrains();
+
+    document.save();    
+}
+
+svg::Dimensions Drawer::calculateDimensions()
+{
+    double maxX = 0;
+    double maxY = 0;
+
+    for (size_t i = 0; i < truss.dofsCount; i++)
+    {
+        if (i % 2 != 0)
+        {
+            double x = truss.coordinates.at(i);
+            maxX = std::max(x, maxX);
+        }
+        else
+        {
+            double y = truss.coordinates.at(i);
+            maxY = std::max(y, maxY);
+        }
+    }
+
+    maxX *= scale;
+    maxY *= scale;
+
+    return svg::Dimensions(maxX + 2 * offset, maxY + 2 * offset);
+}
+
+void Drawer::drawNodes() 
+{
     for (size_t node = 0; node < truss.dofsCount; node += 2)
     {
         double x = truss.coordinates.at(node);
@@ -16,7 +53,10 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
 
         document << svg::Circle(svg::Point(x, y), 10, svg::Fill(svg::Color::Black));
     }
+}
 
+void Drawer::drawElements() 
+{
     // draw the elements
     for (size_t element = 0; element < truss.elementsCount; element++)
     {
@@ -33,7 +73,10 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
 
         document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Blue));
     }
+}
 
+void Drawer::drawExternalForces() 
+{
     // draw external forces
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
@@ -91,7 +134,10 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             document << arrow;
         }
     }
+}
 
+void Drawer::drawConstrains() 
+{
     // draw constrains
     for(size_t dof=0; dof<truss.dofsCount; dof+=2)
     {
@@ -145,31 +191,4 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
             );
         }
     }
-
-    document.save();
-}
-
-svg::Dimensions Drawer::calculateDimensions()
-{
-    double maxX = 0;
-    double maxY = 0;
-
-    for (size_t i = 0; i < truss.dofsCount; i++)
-    {
-        if (i % 2 != 0)
-        {
-            double x = truss.coordinates.at(i);
-            maxX = std::max(x, maxX);
-        }
-        else
-        {
-            double y = truss.coordinates.at(i);
-            maxY = std::max(y, maxY);
-        }
-    }
-
-    maxX *= scale;
-    maxY *= scale;
-
-    return svg::Dimensions(maxX + 2 * offset, maxY + 2 * offset);
 }

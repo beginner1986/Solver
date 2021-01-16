@@ -13,6 +13,7 @@ int main()
 
     std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
     Drawer drawer(truss, "input.svg");
+    drawer.draw();
 
     std::cout << "Solving the truss..." << std::endl;
     Solver solver(truss);
