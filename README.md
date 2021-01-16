@@ -44,6 +44,8 @@ $ cd armadillo-10.1.2/
 $ cmake .
 $ sudo make install
 ```
+- simple-svg - single header library
+```https://github.com/adishavit/simple-svg```
 
 ### USAGE
 Lazy way to run the project:
