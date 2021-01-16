@@ -24,10 +24,10 @@ public:
 private:
     double readA();
     double readE();
-    std::vector<double>& readCoordinates();
-    arma::Mat<uint>& readTopology();
-    std::vector<bool>& readConstrains();
-    std::vector<double>& readForces();
+    std::vector<double> readCoordinates();
+    arma::Mat<uint> readTopology();
+    std::vector<bool> readConstrains();
+    std::vector<double> readForces();
     void fail();
 };
 

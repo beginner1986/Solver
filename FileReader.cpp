@@ -63,22 +63,44 @@ double FileReader::readE()
     return std::stod(word);
 }
 
-std::vector<double>& FileReader::readCoordinates() 
+std::vector<double> FileReader::readCoordinates() 
+{
+    std::vector<double> coordinates;
+
+    std::string line, word;
+    std::getline(file, line);
+    std::istringstream iss(line);
+
+    iss >> word;
+    if(word != "DOFS")
+    {
+        std::cout << "Incorrect DOFS line!" << std::endl;
+        fail();
+    }
+
+    iss >> word;
+    size_t dofsCount = static_cast<size_t>(std::stoi(word));
+    for(size_t dof = 0; dof < dofsCount; dof++)
+    {
+        iss >> word;
+        double coord = std::stod(word);
+        coordinates.push_back(coord);
+    }
+
+    return coordinates;
+}
+
+arma::Mat<uint> FileReader::readTopology() 
 {
     
 }
 
-arma::Mat<uint>& FileReader::readTopology() 
+std::vector<bool> FileReader::readConstrains() 
 {
     
 }
 
-std::vector<bool>& FileReader::readConstrains() 
-{
-    
-}
-
-std::vector<double>& FileReader::readForces() 
+std::vector<double> FileReader::readForces() 
 {
     
 }
