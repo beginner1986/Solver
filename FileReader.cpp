@@ -23,11 +23,13 @@ Truss& FileReader::read()
     truss.E = readE();
     truss.coordinates = readCoordinates();
     truss.topology = readTopology();
-    size_t dofsCount = truss.constrains.size();
+    size_t dofsCount = truss.coordinates.size();
     truss.constrains = readConstrains(dofsCount);
     truss.externalForces = readForces(dofsCount);
 
     file.close();
+
+    return truss;
 }
 
 double FileReader::readA() 
@@ -105,7 +107,7 @@ arma::Mat<uint> FileReader::readTopology()
     iss >> word;
     if(word != "BARS")
     {
-        std::cout << "Incorrect BARS line!" << std::endl;
+        std::cout << "Incorrect data before BARS line!" << std::endl;
         fail();
     }
     iss >> word;
@@ -137,7 +139,36 @@ std::vector<bool> FileReader::readConstrains(size_t dofsCount)
     iss >> word;
     if(word != "CONSTRAINS")
     {
-        std::cout << "Incorrect CONSTRAINS line!" << std::endl;
+        std::cout << "Incorrect data before CONSTRAINS line!" << std::endl;
+        fail();
+    }
+
+    for(size_t node = 0; node < dofsCount/2; node++)
+    {
+        std::getline(file, line);
+        iss = std::istringstream(line);
+        for (size_t i = 0; i < 2; i++)
+        {
+            iss >> word;
+            bool isFixed = static_cast<bool>(std::stoi(word));
+            constrains.push_back(isFixed);
+        }
+    }
+
+    return constrains;
+}
+
+std::vector<double> FileReader::readForces(size_t dofsCount) 
+{
+    std::vector<double> forces;
+    std::string line, word;
+    std::getline(file, line);
+    std::istringstream iss(line);
+    
+    iss >> word;
+    if(word != "FORCES")
+    {
+        std::cout << "Incorrect data before FORCES line!" << std::endl;
         fail();
     }
 
@@ -150,16 +181,11 @@ std::vector<bool> FileReader::readConstrains(size_t dofsCount)
         {
             iss >> word;
             bool is_fixed = static_cast<bool>(std::stoi(word));
-            constrains.push_back(is_fixed);
+            forces.push_back(is_fixed);
         }
     }
 
-    return constrains;
-}
-
-std::vector<double> FileReader::readForces(size_t dofsCount) 
-{
-    
+    return forces;
 }
 
 void FileReader::fail() 
