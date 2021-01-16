@@ -1,7 +1,6 @@
 #ifndef __DRAWER_H__
 #define __DRAWER_H__
 
-#include <sstream>
 #include <algorithm>
 #include <cmath>
 #include <armadillo>
@@ -14,6 +13,7 @@ class Drawer
 private:
     const Truss& truss;
     std::string fileName;
+    svg::Document document;
 
     const double offset = 100;
     const uint scale = 4;

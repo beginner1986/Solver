@@ -3,7 +3,7 @@
 Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileName(fileName)
 {
     svg::Dimensions dimensions = calculateDimensions();
-    svg::Document document(fileName, svg::Layout(dimensions, svg::Layout::BottomLeft));
+    document = svg::Document(fileName, svg::Layout(dimensions, svg::Layout::BottomLeft));
 
     // draw the nodes
     for (size_t node = 0; node < truss.dofsCount; node += 2)
