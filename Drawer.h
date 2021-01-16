@@ -24,13 +24,14 @@ private:
 
 public:
     Drawer(const Truss& truss, std::string fileName);
+    void draw();
 
 private:
     svg::Dimensions calculateDimensions();
-    void drawNodes(svg::Document& document);
-    void drawElements(svg::Document& document);
-    void drawExternalForces(svg::Document& document);
-    void drawConstrains(svg::Document& document);
+    void drawNodes();
+    void drawElements();
+    void drawExternalForces();
+    void drawConstrains();
 };
 
 #endif // __DRAWER_H__

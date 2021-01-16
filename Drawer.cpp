@@ -4,13 +4,16 @@ Drawer::Drawer(const Truss &truss, std::string fileName) : truss(truss), fileNam
 {
     svg::Dimensions dimensions = calculateDimensions();
     document = svg::Document(fileName, svg::Layout(dimensions, svg::Layout::BottomLeft));
+}
 
-    drawNodes(document);
-    drawElements(document);
-    drawExternalForces(document);
-    drawConstrains(document);
+void Drawer::draw() 
+{
+    drawNodes();
+    drawElements();
+    drawExternalForces();
+    drawConstrains();
 
-    document.save();
+    document.save();    
 }
 
 svg::Dimensions Drawer::calculateDimensions()
@@ -38,7 +41,7 @@ svg::Dimensions Drawer::calculateDimensions()
     return svg::Dimensions(maxX + 2 * offset, maxY + 2 * offset);
 }
 
-void Drawer::drawNodes(svg::Document& document) 
+void Drawer::drawNodes() 
 {
     for (size_t node = 0; node < truss.dofsCount; node += 2)
     {
@@ -52,7 +55,7 @@ void Drawer::drawNodes(svg::Document& document)
     }
 }
 
-void Drawer::drawElements(svg::Document& document) 
+void Drawer::drawElements() 
 {
     // draw the elements
     for (size_t element = 0; element < truss.elementsCount; element++)
@@ -70,10 +73,9 @@ void Drawer::drawElements(svg::Document& document)
 
         document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Blue));
     }
-
 }
 
-void Drawer::drawExternalForces(svg::Document& document) 
+void Drawer::drawExternalForces() 
 {
     // draw external forces
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
@@ -134,7 +136,7 @@ void Drawer::drawExternalForces(svg::Document& document)
     }
 }
 
-void Drawer::drawConstrains(svg::Document& document) 
+void Drawer::drawConstrains() 
 {
     // draw constrains
     for(size_t dof=0; dof<truss.dofsCount; dof+=2)
