@@ -21,6 +21,7 @@ public:
 
     std::vector<double> externalForces; // external forces applied to the truss
 
+    Truss() {};
     Truss(double A, double E);
 };
 

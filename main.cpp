@@ -2,12 +2,15 @@
 #include <vector>
 #include <armadillo>
 
+#include "FileReader.h"
 #include "Truss.h"
 #include "Solver.h"
 #include "Drawer.h"
 
 int main()
 {
+    FileReader reader("input/1.truss");
+
     std::cout << "Truss initialization..." << std::endl;
     Truss truss(1, 1);
 
