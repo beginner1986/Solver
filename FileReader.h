@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <armadillo>
 
 #include "Truss.h"
@@ -27,6 +28,7 @@ private:
     arma::Mat<uint>& readTopology();
     std::vector<bool>& readConstrains();
     std::vector<double>& readForces();
+    void fail();
 };
 
 #endif // __FILEREADER_H__
