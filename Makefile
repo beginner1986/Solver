@@ -5,7 +5,7 @@ FLAGS = -Wall -pedantic -O3 --std=c++11 -larmadillo
 FLAGS_OMP = #-fopenmp
 
 #Source files that should be compiled
-SOURCES = main.cpp Truss.cpp Solver.cpp Drawer.cpp
+SOURCES = main.cpp Truss.cpp Solver.cpp Drawer.cpp FileReader.cpp
 
 #Output files that should be cleared
 OUTPUT = solver

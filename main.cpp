@@ -2,14 +2,16 @@
 #include <vector>
 #include <armadillo>
 
+#include "FileReader.h"
 #include "Truss.h"
 #include "Solver.h"
 #include "Drawer.h"
 
 int main()
 {
-    std::cout << "Truss initialization..." << std::endl;
-    Truss truss(1, 1);
+    std::cout << "Reading the input truss from file..." << std::endl;
+    FileReader reader("input/1.truss");
+    Truss truss = reader.read();
 
     std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
     Drawer drawer(truss, "input.svg");
