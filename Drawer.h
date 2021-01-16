@@ -27,6 +27,10 @@ public:
 
 private:
     svg::Dimensions calculateDimensions();
+    void drawNodes(svg::Document& document);
+    void drawElements(svg::Document& document);
+    void drawExternalForces(svg::Document& document);
+    void drawConstrains(svg::Document& document);
 };
 
 #endif // __DRAWER_H__
