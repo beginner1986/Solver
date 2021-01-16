@@ -2,6 +2,7 @@
 
 FileReader::FileReader(std::string fileName) : fileName(fileName)
 {
+    truss = Truss(1, 1);
     file.open(fileName,std::ios::in);
     std::string line;
     std::getline(file, line);
@@ -12,7 +13,7 @@ FileReader::FileReader(std::string fileName) : fileName(fileName)
     }
 }
 
-Truss& FileReader::read() 
+Truss FileReader::read() 
 {
     if(!file.is_open())
     {
@@ -180,8 +181,8 @@ std::vector<double> FileReader::readForces(size_t dofsCount)
         for (size_t i = 0; i < 2; i++)
         {
             iss >> word;
-            bool is_fixed = static_cast<bool>(std::stoi(word));
-            forces.push_back(is_fixed);
+            double force = std::stod(word);
+            forces.push_back(force);
         }
     }
 

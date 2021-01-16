@@ -19,7 +19,7 @@ private:
 
 public:
     FileReader(std::string fileName);
-    Truss& read();
+    Truss read();
 
 private:
     double readA();
