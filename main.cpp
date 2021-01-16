@@ -7,10 +7,16 @@
 #include "Solver.h"
 #include "Drawer.h"
 
-int main()
+int main(int argc, char *argv[])
 {
+    if(argc !=2)
+    {
+        std::cout << "Usage: ./solver inputFile.truss" << std::endl;
+        exit(0);
+    }
+
     std::cout << "Reading the input truss from file..." << std::endl;
-    FileReader reader("input/1.truss");
+    FileReader reader(argv[1]);
     Truss truss = reader.read();
 
     std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;

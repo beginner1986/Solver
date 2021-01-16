@@ -8,4 +8,4 @@ make build
 
 echo Running the project...
 echo 
-./solver
+./solver input/1.truss
