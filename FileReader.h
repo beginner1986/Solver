@@ -26,8 +26,8 @@ private:
     double readE();
     std::vector<double> readCoordinates();
     arma::Mat<uint> readTopology();
-    std::vector<bool> readConstrains();
-    std::vector<double> readForces();
+    std::vector<bool> readConstrains(size_t dofsCount);
+    std::vector<double> readForces(size_t dofsCount);
     void fail();
 };
 

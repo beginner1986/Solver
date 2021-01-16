@@ -23,8 +23,9 @@ Truss& FileReader::read()
     truss.E = readE();
     truss.coordinates = readCoordinates();
     truss.topology = readTopology();
-    truss.constrains = readConstrains();
-    truss.externalForces = readForces();
+    size_t dofsCount = truss.constrains.size();
+    truss.constrains = readConstrains(dofsCount);
+    truss.externalForces = readForces(dofsCount);
 
     file.close();
 }
@@ -126,12 +127,37 @@ arma::Mat<uint> FileReader::readTopology()
     return topology;
 }
 
-std::vector<bool> FileReader::readConstrains() 
+std::vector<bool> FileReader::readConstrains(size_t dofsCount) 
 {
-    
+    std::vector<bool> constrains;
+    std::string line, word;
+    std::getline(file, line);
+    std::istringstream iss(line);
+
+    iss >> word;
+    if(word != "CONSTRAINS")
+    {
+        std::cout << "Incorrect CONSTRAINS line!" << std::endl;
+        fail();
+    }
+
+    for (size_t node = 0; node < dofsCount/2; node++)
+    {
+        std::getline(file, line);
+        iss = std::istringstream(line);
+        
+        for (size_t i = 0; i < 2; i++)
+        {
+            iss >> word;
+            bool is_fixed = static_cast<bool>(std::stoi(word));
+            constrains.push_back(is_fixed);
+        }
+    }
+
+    return constrains;
 }
 
-std::vector<double> FileReader::readForces() 
+std::vector<double> FileReader::readForces(size_t dofsCount) 
 {
     
 }
