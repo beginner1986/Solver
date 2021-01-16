@@ -9,10 +9,9 @@
 
 int main()
 {
+    std::cout << "Reading the input truss from file..." << std::endl;
     FileReader reader("input/1.truss");
-
-    std::cout << "Truss initialization..." << std::endl;
-    Truss truss(1, 1);
+    Truss truss = reader.read();
 
     std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
     Drawer drawer(truss, "input.svg");

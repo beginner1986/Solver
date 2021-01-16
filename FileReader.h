@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <iostream>
 #include <armadillo>
 
 #include "Truss.h"
@@ -22,10 +23,10 @@ public:
 private:
     double readA();
     double readE();
-    std::vector<double> readCoordinates();
-    arma::Mat<uint> readTopology();
-    std::vector<bool> readConstrains();
-    std::vector<double> readForces();
+    std::vector<double>& readCoordinates();
+    arma::Mat<uint>& readTopology();
+    std::vector<bool>& readConstrains();
+    std::vector<double>& readForces();
 };
 
 #endif // __FILEREADER_H__
