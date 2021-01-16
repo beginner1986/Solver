@@ -2,7 +2,6 @@
 
 FileReader::FileReader(std::string fileName) : fileName(fileName)
 {
-    truss = Truss(1, 1);
     file.open(fileName,std::ios::in);
     std::string line;
     std::getline(file, line);
@@ -20,17 +19,17 @@ Truss FileReader::read()
         fail();
     }
     
-    truss.A = readA();
-    truss.E = readE();
-    truss.coordinates = readCoordinates();
-    truss.topology = readTopology();
-    size_t dofsCount = truss.coordinates.size();
-    truss.constrains = readConstrains(dofsCount);
-    truss.externalForces = readForces(dofsCount);
+    double A = readA();
+    double E = readE();
+    std::vector<double> coordinates = readCoordinates();
+    arma::Mat<uint> topology = readTopology();
+    size_t dofsCount = coordinates.size();
+    std::vector<bool> constrains = readConstrains(dofsCount);
+    std::vector<double> externalForces = readForces(dofsCount);
 
     file.close();
 
-    return truss;
+    return Truss(A, E, coordinates, topology, constrains, externalForces);
 }
 
 double FileReader::readA() 

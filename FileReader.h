@@ -15,7 +15,6 @@ class FileReader
 private:
     std::string fileName;
     std::ifstream file;
-    Truss truss;
 
 public:
     FileReader(std::string fileName);
