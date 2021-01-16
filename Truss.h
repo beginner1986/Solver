@@ -21,8 +21,10 @@ public:
 
     std::vector<double> externalForces; // external forces applied to the truss
 
-    Truss() {};
-    Truss(double A, double E);
+    Truss(double A, double E, std::vector<double> coordinates, 
+        arma::Mat<uint> topology, std::vector<bool> constrains, 
+        std::vector<double> externalForces
+    );
 };
 
 #endif // __TRUSS_H__
