@@ -87,8 +87,19 @@ void Drawer::drawExternalForces()
         if(force != 0)
         {
             // force line coordinates - not scaled
-            double x2 = truss.coordinates.at(dof);
-            double y2 = truss.coordinates.at(dof);
+            double x2;
+            double y2;
+            if(dof % 2 == 0)
+            {
+                x2 = truss.coordinates.at(dof);
+                y2 = truss.coordinates.at(dof + 1);
+            }
+            else
+            {
+                x2 = truss.coordinates.at(dof - 1);
+                y2 = truss.coordinates.at(dof);
+            }
+
             x2 = x2 * scale + offset;
             y2 = y2 * scale + offset;
             double x1 = x2;
