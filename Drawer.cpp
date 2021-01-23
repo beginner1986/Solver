@@ -269,3 +269,39 @@ void Drawer::drawVerticalConstrain(double x, double y)
         svg::Point(x + fixSize * 2 / 5, y - fixSize / 2),
         svg::Stroke(2, svg::Color::Green));
 }
+
+void Drawer::drawVerticalSliderConstrain(double x, double y) 
+{
+    x = x * scale + offset;
+    y = y * scale + offset - constrainOffset;
+
+    // triangle with underline
+    svg::Polyline fix(svg::Stroke(2, svg::Color::Green));
+    fix << svg::Point(x - fixSize / 2, y - fixSize / 2)
+        << svg::Point(x, y)
+        << svg::Point(x + fixSize / 2, y - fixSize / 2)
+        << svg::Point(x + fixSize * 3 / 4, y - fixSize / 2)
+        << svg::Point(x - fixSize * 3 / 4, y - fixSize / 2);
+    document << fix;
+
+    // second underline
+    document << svg::Line(
+        svg::Point(x - fixSize * 3 / 4, y - fixSize * 2 / 3),
+        svg::Point(x + fixSize * 3 / 4, y - fixSize * 2 / 3),
+        svg::Stroke(2, svg::Color::Green)
+    );
+
+    // diagonal lines
+    document << svg::Line(
+        svg::Point(x - fixSize * 3 / 5, y - fixSize),
+        svg::Point(x - fixSize * 2 / 5, y - fixSize * 2 / 3),
+        svg::Stroke(2, svg::Color::Green));
+    document << svg::Line(
+        svg::Point(x - fixSize / 5, y - fixSize),
+        svg::Point(x, y - fixSize * 2 / 3),
+        svg::Stroke(2, svg::Color::Green));
+    document << svg::Line(
+        svg::Point(x + fixSize * 1 / 5, y - fixSize),
+        svg::Point(x + fixSize * 2 / 5, y - fixSize * 2 / 3),
+        svg::Stroke(2, svg::Color::Green));
+}

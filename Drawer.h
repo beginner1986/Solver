@@ -36,6 +36,7 @@ private:
     void drawHorizontalConstrain(double x, double y);
     void drawHorizontalSliderConstrain(double x, double y);
     void drawVerticalConstrain(double x, double y);
+    void drawVerticalSliderConstrain(double x, double y);
 };
 
 #endif // __DRAWER_H__
