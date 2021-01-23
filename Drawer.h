@@ -13,6 +13,7 @@ class Drawer
 private:
     const Truss& truss;
     std::string fileName;
+    svg::Dimensions dimensions;
     svg::Document document;
 
     uint scale = 4;
