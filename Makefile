@@ -1,7 +1,7 @@
 #General Makefile variables
 CC = gcc
 CCPLUS = g++
-FLAGS = -Wall -pedantic -O3 --std=c++11 -larmadillo 
+FLAGS = -Wall -pedantic -O1 --std=c++11 -larmadillo 
 FLAGS_OMP = #-fopenmp
 
 #Source files that should be compiled

@@ -32,6 +32,8 @@ private:
     void drawElements();
     void drawExternalForces();
     void drawConstrains();
+    void drawHorizontalConstrain(double x, double y);
+    void drawVerticalConstrain(double x, double y);
 };
 
 #endif // __DRAWER_H__
