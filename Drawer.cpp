@@ -81,8 +81,6 @@ void Drawer::drawExternalForces()
 {
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
-        // TODO: draw the force on the outer side of the truss
-
         double force = truss.externalForces.at(dof);
 
         if (force != 0)
@@ -150,14 +148,10 @@ void Drawer::drawExternalForces()
 
 void Drawer::drawConstrains()
 {
-    for (size_t dof = 0; dof < truss.dofsCount; dof ++)
+    for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
         if (truss.constrains.at(dof))
         {
-            /*
-            TODO:
-            - constrains drawing on the outer side of the truss
-            */
             double x, y;
 
             if (dof % 2 == 0) // x axis
@@ -165,7 +159,7 @@ void Drawer::drawConstrains()
                 x = truss.coordinates.at(dof);
                 y = truss.coordinates.at(dof + 1);
 
-                if(truss.constrains.at(dof + 1))
+                if (truss.constrains.at(dof + 1))
                 {
                     drawVerticalConstrain(x, y);
                     dof++;
@@ -191,7 +185,7 @@ void Drawer::drawHorizontalConstrain(double x, double y)
     y = y * scale + offset;
 
     double direction = 1;
-    if(x < (dimensions.width / 2))
+    if (x < (dimensions.width / 2))
         direction = -1;
 
     x = x + constrainOffset * direction;
@@ -216,17 +210,17 @@ void Drawer::drawHorizontalConstrain(double x, double y)
         svg::Stroke(2, svg::Color::Green));
     document << svg::Line(
         svg::Point(x + direction * (fixSize / 2), y - fixSize * 2 / 5),
-        svg::Point(x + direction * fixSize , y - fixSize * 3 / 5),
+        svg::Point(x + direction * fixSize, y - fixSize * 3 / 5),
         svg::Stroke(2, svg::Color::Green));
 }
 
-void Drawer::drawHorizontalSliderConstrain(double x, double y) 
+void Drawer::drawHorizontalSliderConstrain(double x, double y)
 {
     x = x * scale + offset;
     y = y * scale + offset;
 
     double direction = 1;
-    if(x < (dimensions.width / 2))
+    if (x < (dimensions.width / 2))
         direction = -1;
 
     x = x + constrainOffset * direction;
@@ -251,15 +245,18 @@ void Drawer::drawHorizontalSliderConstrain(double x, double y)
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y + fixSize * 2 / 5),
         svg::Point(x + direction * fixSize, y + fixSize / 5),
-        svg::Stroke(2, svg::Color::Green));
+        svg::Stroke(2, svg::Color::Green)
+    );
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y),
         svg::Point(x + direction * fixSize, y - fixSize / 5),
-        svg::Stroke(2, svg::Color::Green));
+        svg::Stroke(2, svg::Color::Green)
+    );
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y - fixSize * 2 / 5),
-        svg::Point(x + direction * fixSize , y - fixSize * 3 / 5),
-        svg::Stroke(2, svg::Color::Green));
+        svg::Point(x + direction * fixSize, y - fixSize * 3 / 5),
+        svg::Stroke(2, svg::Color::Green)
+    );
 }
 
 void Drawer::drawVerticalConstrain(double x, double y)
@@ -291,7 +288,7 @@ void Drawer::drawVerticalConstrain(double x, double y)
         svg::Stroke(2, svg::Color::Green));
 }
 
-void Drawer::drawVerticalSliderConstrain(double x, double y) 
+void Drawer::drawVerticalSliderConstrain(double x, double y)
 {
     x = x * scale + offset;
     y = y * scale + offset - constrainOffset;

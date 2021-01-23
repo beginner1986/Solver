@@ -11,7 +11,7 @@
 class Drawer
 {
 private:
-    const Truss& truss;
+    const Truss &truss;
     std::string fileName;
     svg::Dimensions dimensions;
     svg::Document document;
@@ -25,7 +25,7 @@ private:
     const double fixSize = 30;
 
 public:
-    Drawer(const Truss& truss, std::string fileName);
+    Drawer(const Truss &truss, std::string fileName);
     void draw();
 
 private:
