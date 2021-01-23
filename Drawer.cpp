@@ -35,6 +35,9 @@ svg::Dimensions Drawer::calculateDimensions()
         }
     }
 
+    if(std::max(maxX, maxY) < 100)
+        scale *= 100;
+
     maxX *= scale;
     maxY *= scale;
 

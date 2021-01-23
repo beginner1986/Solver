@@ -15,8 +15,8 @@ private:
     std::string fileName;
     svg::Document document;
 
+    uint scale = 4;
     const double offset = 100;
-    const uint scale = 4;
     const double forceLineLnegth = 80;
     const double arrowLength = 30;
     const double arrowThickness = 10;
