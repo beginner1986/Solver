@@ -17,6 +17,7 @@ private:
 
     uint scale = 4;
     const double offset = 100;
+    const double constrainOffset = 6;
     const double forceLineLnegth = 80;
     const double arrowLength = 30;
     const double arrowThickness = 10;
@@ -33,6 +34,7 @@ private:
     void drawExternalForces();
     void drawConstrains();
     void drawHorizontalConstrain(double x, double y);
+    void drawHorizontalSliderConstrain(double x, double y);
     void drawVerticalConstrain(double x, double y);
 };
 
