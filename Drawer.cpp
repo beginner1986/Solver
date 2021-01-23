@@ -164,13 +164,22 @@ void Drawer::drawConstrains()
             {
                 x = truss.coordinates.at(dof);
                 y = truss.coordinates.at(dof + 1);
-                drawHorizontalConstrain(x, y);
+
+                if(truss.constrains.at(dof + 1))
+                {
+                    drawVerticalConstrain(x, y);
+                    dof++;
+                }
+                else
+                {
+                    drawHorizontalSliderConstrain(x, y);
+                }
             }
             else // y axis
             {
                 x = truss.coordinates.at(dof - 1);
                 y = truss.coordinates.at(dof);
-                drawVerticalConstrain(x, y);
+                drawVerticalSliderConstrain(x, y);
             }
         }
     }
