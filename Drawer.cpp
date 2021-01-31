@@ -9,8 +9,8 @@ Drawer::Drawer(SolvedTruss &truss, std::string fileName)
 
 void Drawer::draw()
 {
-    drawNodes(truss);
-    drawElements(truss);
+    drawNodes(truss, svg::Color::Black);
+    drawElements(truss, svg::Color::Blue);
     drawExternalForces(truss);
     drawConstrains(truss);
 
@@ -45,7 +45,7 @@ svg::Dimensions Drawer::calculateDimensions(Truss &truss)
     return svg::Dimensions(maxX + 2 * offset, maxY + 2 * offset);
 }
 
-void Drawer::drawNodes(Truss &truss)
+void Drawer::drawNodes(Truss &truss, svg::Color color)
 {
     for (size_t node = 0; node < truss.dofsCount; node += 2)
     {
@@ -55,11 +55,11 @@ void Drawer::drawNodes(Truss &truss)
         x = x * scale + offset;
         y = y * scale + offset;
 
-        document << svg::Circle(svg::Point(x, y), 10, svg::Fill(svg::Color::Black));
+        document << svg::Circle(svg::Point(x, y), 10, svg::Fill(color));
     }
 }
 
-void Drawer::drawElements(Truss &truss)
+void Drawer::drawElements(Truss &truss, svg::Color color)
 {
     for (size_t element = 0; element < truss.elementsCount; element++)
     {
@@ -74,7 +74,7 @@ void Drawer::drawElements(Truss &truss)
         x2 = x2 * scale + offset;
         y2 = y2 * scale + offset;
 
-        document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Blue));
+        document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, color));
     }
 }
 

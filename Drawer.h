@@ -30,8 +30,8 @@ public:
 
 private:
     svg::Dimensions calculateDimensions(Truss &truss);
-    void drawNodes(Truss &truss);
-    void drawElements(Truss &truss);
+    void drawNodes(Truss &truss, svg::Color color);
+    void drawElements(Truss &truss, svg::Color color);
     void drawExternalForces(Truss &truss);
     void drawConstrains(Truss &truss);
     void drawHorizontalConstrain(double x, double y);
