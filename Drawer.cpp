@@ -28,27 +28,17 @@ svg::Dimensions Drawer::calculateDimensions(const SolvedTruss &truss)
     {
         if (i % 2 != 0)
         {
-            double x = truss.coordinates.at(i);
-            maxX = std::max(x, maxX);
+            double x1 = truss.coordinates.at(i);
+            double x2 = truss.getInputTruss().coordinates.at(i);
+            maxX = std::max(x1, maxX);
+            maxX = std::max(x2, maxX);
         }
         else
         {
-            double y = truss.coordinates.at(i);
-            maxY = std::max(y, maxY);
-        }
-    }
-
-    for (size_t i = 0; i < truss.getInputTruss().dofsCount; i++)
-    {
-        if (i % 2 != 0)
-        {
-            double x = truss.getInputTruss().coordinates.at(i);
-            maxX = std::max(x, maxX);
-        }
-        else
-        {
-            double y = truss.getInputTruss().coordinates.at(i);
-            maxY = std::max(y, maxY);
+            double y1 = truss.coordinates.at(i);
+            double y2 = truss.getInputTruss().coordinates.at(i);
+            maxY = std::max(y1, maxY);
+            maxY = std::max(y2, maxY);
         }
     }
 
