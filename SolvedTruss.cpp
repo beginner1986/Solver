@@ -20,19 +20,19 @@ void SolvedTruss::solve()
     this->reactionForces = solver.getReactionForces();
     this->elementsInternalStress = solver.getElementsInternalStress();
 
-    implementDisplacements();
+    applyDisplacements(globalDisplacements);
 }
 
 void SolvedTruss::draw(std::string fileName) 
 {
-    Drawer trussDrawer(truss, fileName);
+    Drawer trussDrawer(*this, fileName);
     trussDrawer.draw();
 }
 
-void SolvedTruss::implementDisplacements() 
+void SolvedTruss::applyDisplacements(arma::Col<double> displacements) 
 {
     for(size_t c=0; c<dofsCount; c++)
     {
-        coordinates.at(c) = coordinates.at(c) + globalDisplacements.at(c) * displacementsScale;
+        coordinates.at(c) = coordinates.at(c) + displacements.at(c) * displacementsScale;
     }
 }

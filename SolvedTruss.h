@@ -19,9 +19,10 @@ public:
     SolvedTruss(Truss &truss);
     void solve();
     void draw(std::string fileName);
+    Truss getInputTruss() const { return truss; }
 
 private:
-    void implementDisplacements();
+    void applyDisplacements(arma::Col<double> displacements);
 };
 
 #endif // __CALCULATEDTRUSS_H__

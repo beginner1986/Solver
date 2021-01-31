@@ -22,8 +22,8 @@ int main(int argc, char *argv[])
     SolvedTruss solvedTruss(truss);
     solvedTruss.solve();
     
-    std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
-    solvedTruss.draw("input.svg");
+    std::cout << "Drawing solved truss into file \"truss.svg\"..." << std::endl;
+    solvedTruss.draw("truss.svg");
 
     std::cout << "RESULTS" << std::endl;
     std::cout << "Global forces vector:" << std::endl;
