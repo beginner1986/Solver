@@ -20,12 +20,14 @@ int main(int argc, char *argv[])
     Truss truss = reader.read();
 
     std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
-    Drawer drawer(truss, "input.svg");
-    drawer.draw();
+    Drawer trussDrawer(truss, "input.svg");
+    trussDrawer.draw();
 
     std::cout << "Solving the truss..." << std::endl;
     SolvedTruss solvedTruss(&truss);
     solvedTruss.solve();
+    Drawer solvedDrawer(solvedTruss, "output.svg");
+    solvedDrawer.draw();
 
     std::cout << "RESULTS" << std::endl;
     std::cout << "Global forces vector:" << std::endl;

@@ -4,7 +4,8 @@
 #include "Solver.h"
 
 SolvedTruss::SolvedTruss(Truss *truss)
-    : Truss(truss->A, truss->E, truss->coordinates, truss-> topology, truss->constrains, truss->externalForces)
+    : Truss(truss->A, truss->E, truss->coordinates, truss-> topology, truss->constrains, truss->externalForces),
+    truss(truss)
 {
 }
 
@@ -17,4 +18,14 @@ void SolvedTruss::solve()
     this->globalDisplacements = solver.getGlobalDisplacements();
     this->reactionForces = solver.getReactionForces();
     this->elementsInternalStress = solver.getElementsInternalStress();
+
+    implementDisplacements();
+}
+
+void SolvedTruss::implementDisplacements() 
+{
+    for(size_t c=0; c<dofsCount; c++)
+    {
+        coordinates.at(c) = coordinates.at(c) + globalDisplacements.at(c) * displacementsScale;
+    }
 }
