@@ -12,12 +12,13 @@ public:
     std::vector<arma::Col<double>> elementsInternalStress;
 
 private:
-    Truss *truss;
+    Truss &truss;
     const double displacementsScale = 1e4;
 
 public:
-    SolvedTruss(Truss *truss);
+    SolvedTruss(Truss &truss);
     void solve();
+    void draw(std::string fileName);
 
 private:
     void implementDisplacements();

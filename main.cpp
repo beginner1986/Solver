@@ -5,7 +5,6 @@
 #include "FileReader.h"
 #include "Truss.h"
 #include "SolvedTruss.h"
-#include "Drawer.h"
 
 int main(int argc, char *argv[])
 {
@@ -19,15 +18,12 @@ int main(int argc, char *argv[])
     FileReader reader(argv[1]);
     Truss truss = reader.read();
 
-    std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
-    Drawer trussDrawer(truss, "input.svg");
-    trussDrawer.draw();
-
     std::cout << "Solving the truss..." << std::endl;
-    SolvedTruss solvedTruss(&truss);
+    SolvedTruss solvedTruss(truss);
     solvedTruss.solve();
-    Drawer solvedDrawer(solvedTruss, "output.svg");
-    solvedDrawer.draw();
+    
+    std::cout << "Drawing input truss into file \"input.svg\"..." << std::endl;
+    solvedTruss.draw("input.svg");
 
     std::cout << "RESULTS" << std::endl;
     std::cout << "Global forces vector:" << std::endl;

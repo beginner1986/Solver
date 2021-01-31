@@ -2,9 +2,10 @@
 
 #include "SolvedTruss.h"
 #include "Solver.h"
+#include "Drawer.h"
 
-SolvedTruss::SolvedTruss(Truss *truss)
-    : Truss(truss->A, truss->E, truss->coordinates, truss-> topology, truss->constrains, truss->externalForces),
+SolvedTruss::SolvedTruss(Truss &truss)
+    : Truss(truss.A, truss.E, truss.coordinates, truss.topology, truss.constrains, truss.externalForces),
     truss(truss)
 {
 }
@@ -20,6 +21,12 @@ void SolvedTruss::solve()
     this->elementsInternalStress = solver.getElementsInternalStress();
 
     implementDisplacements();
+}
+
+void SolvedTruss::draw(std::string fileName) 
+{
+    Drawer trussDrawer(truss, fileName);
+    trussDrawer.draw();
 }
 
 void SolvedTruss::implementDisplacements() 
