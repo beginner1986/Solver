@@ -7,17 +7,19 @@ Drawer::Drawer(SolvedTruss &truss, std::string fileName)
     document = svg::Document(fileName, svg::Layout(dimensions, svg::Layout::BottomLeft));
 }
 
-void Drawer::draw()
+void Drawer::draw(SolvedTruss &truss)
 {
     drawNodes(truss, svg::Color::Black);
-    drawElements(truss, svg::Color::Blue);
-    drawExternalForces(truss);
-    drawConstrains(truss);
+    drawNodes(truss.getInputTruss(), svg::Color::Purple);
+    drawElements(truss, svg::Color::Blue, 3);
+    drawElements(truss.getInputTruss(), svg::Color::Magenta, 1);
+    drawExternalForces(truss.getInputTruss());
+    drawConstrains(truss.getInputTruss());
 
     document.save();
 }
 
-svg::Dimensions Drawer::calculateDimensions(Truss &truss)
+svg::Dimensions Drawer::calculateDimensions(const Truss &truss)
 {
     double maxX = 0;
     double maxY = 0;
@@ -45,7 +47,7 @@ svg::Dimensions Drawer::calculateDimensions(Truss &truss)
     return svg::Dimensions(maxX + 2 * offset, maxY + 2 * offset);
 }
 
-void Drawer::drawNodes(Truss &truss, svg::Color color)
+void Drawer::drawNodes(const Truss &truss, svg::Color color)
 {
     for (size_t node = 0; node < truss.dofsCount; node += 2)
     {
@@ -59,7 +61,7 @@ void Drawer::drawNodes(Truss &truss, svg::Color color)
     }
 }
 
-void Drawer::drawElements(Truss &truss, svg::Color color)
+void Drawer::drawElements(const Truss &truss, svg::Color color, double width)
 {
     for (size_t element = 0; element < truss.elementsCount; element++)
     {
@@ -74,11 +76,11 @@ void Drawer::drawElements(Truss &truss, svg::Color color)
         x2 = x2 * scale + offset;
         y2 = y2 * scale + offset;
 
-        document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, color));
+        document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(width, color));
     }
 }
 
-void Drawer::drawExternalForces(Truss &truss)
+void Drawer::drawExternalForces(const Truss &truss)
 {
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
@@ -147,7 +149,7 @@ void Drawer::drawExternalForces(Truss &truss)
     }
 }
 
-void Drawer::drawConstrains(Truss &truss)
+void Drawer::drawConstrains(const Truss &truss)
 {
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {

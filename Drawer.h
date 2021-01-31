@@ -26,14 +26,14 @@ private:
 
 public:
     Drawer(SolvedTruss &truss, std::string fileName);
-    void draw();
+    void draw(SolvedTruss &truss);
 
 private:
-    svg::Dimensions calculateDimensions(Truss &truss);
-    void drawNodes(Truss &truss, svg::Color color);
-    void drawElements(Truss &truss, svg::Color color);
-    void drawExternalForces(Truss &truss);
-    void drawConstrains(Truss &truss);
+    svg::Dimensions calculateDimensions(const Truss &truss);
+    void drawNodes(const Truss &truss, svg::Color color);
+    void drawElements(const Truss &truss, svg::Color color, double width);
+    void drawExternalForces(const Truss &truss);
+    void drawConstrains(const Truss &truss);
     void drawHorizontalConstrain(double x, double y);
     void drawHorizontalSliderConstrain(double x, double y);
     void drawVerticalConstrain(double x, double y);

@@ -26,7 +26,7 @@ void SolvedTruss::solve()
 void SolvedTruss::draw(std::string fileName) 
 {
     Drawer trussDrawer(*this, fileName);
-    trussDrawer.draw();
+    trussDrawer.draw(*this);
 }
 
 void SolvedTruss::applyDisplacements(arma::Col<double> displacements) 
