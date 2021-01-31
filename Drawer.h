@@ -29,7 +29,7 @@ public:
     void draw(SolvedTruss &truss);
 
 private:
-    svg::Dimensions calculateDimensions(const Truss &truss);
+    svg::Dimensions calculateDimensions(const SolvedTruss &truss);
     void drawNodes(const Truss &truss, svg::Color color);
     void drawElements(const Truss &truss, svg::Color color, double width);
     void drawExternalForces(const Truss &truss);

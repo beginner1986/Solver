@@ -19,7 +19,7 @@ void Drawer::draw(SolvedTruss &truss)
     document.save();
 }
 
-svg::Dimensions Drawer::calculateDimensions(const Truss &truss)
+svg::Dimensions Drawer::calculateDimensions(const SolvedTruss &truss)
 {
     double maxX = 0;
     double maxY = 0;
@@ -34,6 +34,20 @@ svg::Dimensions Drawer::calculateDimensions(const Truss &truss)
         else
         {
             double y = truss.coordinates.at(i);
+            maxY = std::max(y, maxY);
+        }
+    }
+
+    for (size_t i = 0; i < truss.getInputTruss().dofsCount; i++)
+    {
+        if (i % 2 != 0)
+        {
+            double x = truss.getInputTruss().coordinates.at(i);
+            maxX = std::max(x, maxX);
+        }
+        else
+        {
+            double y = truss.getInputTruss().coordinates.at(i);
             maxY = std::max(y, maxY);
         }
     }
