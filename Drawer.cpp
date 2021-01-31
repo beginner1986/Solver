@@ -42,8 +42,7 @@ svg::Dimensions Drawer::calculateDimensions(const SolvedTruss &truss)
         }
     }
 
-    if (std::max(maxX, maxY) < 100)
-        scale *= 100;
+    scale = 1000 / std::max(maxX, maxY);
 
     maxX *= scale;
     maxY *= scale;

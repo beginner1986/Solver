@@ -1,3 +1,4 @@
+#include <cmath>
 #include <armadillo>
 
 #include "SolvedTruss.h"
@@ -20,6 +21,7 @@ void SolvedTruss::solve()
     this->reactionForces = solver.getReactionForces();
     this->elementsInternalStress = solver.getElementsInternalStress();
 
+    displacementsScale = calculateScale(truss);
     applyDisplacements(globalDisplacements);
 }
 
@@ -29,10 +31,27 @@ void SolvedTruss::draw(std::string fileName)
     trussDrawer.draw(*this);
 }
 
+double SolvedTruss::calculateScale(const Truss &truss) 
+{
+    /*
+    double maxDisplacement = std::max(abs(globalDisplacements.max()), abs(globalDisplacements.min()));
+    double maxCoordinate = 0;
+    for(double c : coordinates)
+    {
+        maxCoordinate = std::max(maxCoordinate, c);
+    }
+
+    double ratio = maxDisplacement / maxCoordinate;
+
+    return 100 * ratio;
+    */
+    return 1e4;
+}
+
 void SolvedTruss::applyDisplacements(arma::Col<double> displacements) 
 {
     for(size_t c=0; c<dofsCount; c++)
     {
-        coordinates.at(c) = coordinates.at(c) + displacements.at(c) * displacementsScale;
+        coordinates.at(c) += (displacements.at(c) * displacementsScale);
     }
 }
