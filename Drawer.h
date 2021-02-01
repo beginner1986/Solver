@@ -16,7 +16,7 @@ private:
     svg::Dimensions dimensions;
     svg::Document document;
 
-    uint scale = 4;
+    uint scale;
     const double offset = 100;
     const double constrainOffset = 6;
     const double forceLineLnegth = 80;

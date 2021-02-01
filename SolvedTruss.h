@@ -22,7 +22,7 @@ public:
     Truss getInputTruss() const { return truss; }
 
 private:
-    double calculateScale(const Truss &truss);
+    double calculateScale();
     void applyDisplacements(arma::Col<double> displacements);
 };
 

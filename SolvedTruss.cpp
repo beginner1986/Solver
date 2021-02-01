@@ -21,7 +21,7 @@ void SolvedTruss::solve()
     this->reactionForces = solver.getReactionForces();
     this->elementsInternalStress = solver.getElementsInternalStress();
 
-    displacementsScale = calculateScale(truss);
+    displacementsScale = calculateScale();
     applyDisplacements(globalDisplacements);
 }
 
@@ -31,21 +31,30 @@ void SolvedTruss::draw(std::string fileName)
     trussDrawer.draw(*this);
 }
 
-double SolvedTruss::calculateScale(const Truss &truss) 
+double SolvedTruss::calculateScale() 
 {
-    /*
-    double maxDisplacement = std::max(abs(globalDisplacements.max()), abs(globalDisplacements.min()));
+    double maxDisplacement = 0;
+    for(double d : globalDisplacements)
+    {
+        maxDisplacement = std::max(maxDisplacement, std::abs(d));
+    }
+
     double maxCoordinate = 0;
     for(double c : coordinates)
     {
-        maxCoordinate = std::max(maxCoordinate, c);
+        maxCoordinate = std::max(maxCoordinate, std::abs(c));
     }
 
-    double ratio = maxDisplacement / maxCoordinate;
+    double scale = maxCoordinate / maxDisplacement / 10;
 
-    return 100 * ratio;
-    */
-    return 1e4;
+    std::cout << "Max coordinate: " << maxCoordinate << std::endl;
+    std::cout << "Max displacement: " << maxDisplacement << std::endl;
+
+    std::cout << "Scale: " << scale << std::endl;
+
+    return scale;
+    
+    //return 1e4;
 }
 
 void SolvedTruss::applyDisplacements(arma::Col<double> displacements) 
