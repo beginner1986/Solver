@@ -6,17 +6,17 @@
 #include <armadillo>
 
 #include "lib/simple_svg_1.0.0.hpp"
-#include "Truss.h"
+#include "SolvedTruss.h"
 
 class Drawer
 {
 private:
-    const Truss &truss;
+    SolvedTruss &truss;
     std::string fileName;
     svg::Dimensions dimensions;
     svg::Document document;
 
-    uint scale = 4;
+    uint scale;
     const double offset = 100;
     const double constrainOffset = 6;
     const double forceLineLnegth = 80;
@@ -25,15 +25,15 @@ private:
     const double fixSize = 30;
 
 public:
-    Drawer(const Truss &truss, std::string fileName);
-    void draw();
+    Drawer(SolvedTruss &truss, std::string fileName);
+    void draw(SolvedTruss &truss);
 
 private:
-    svg::Dimensions calculateDimensions();
-    void drawNodes();
-    void drawElements();
-    void drawExternalForces();
-    void drawConstrains();
+    svg::Dimensions calculateDimensions(const SolvedTruss &truss);
+    void drawNodes(const Truss &truss, svg::Color color);
+    void drawElements(const Truss &truss, svg::Color color, double width);
+    void drawExternalForces(const Truss &truss);
+    void drawConstrains(const Truss &truss);
     void drawHorizontalConstrain(double x, double y);
     void drawHorizontalSliderConstrain(double x, double y);
     void drawVerticalConstrain(double x, double y);
