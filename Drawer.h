@@ -33,6 +33,7 @@ private:
     void drawNodes(const Truss &truss, svg::Color color);
     void drawElements(const Truss &truss, svg::Color color, double width);
     void drawForces(const Truss &truss, const std::vector<double> forces, svg::Color color);
+    void drawInternalStress(const SolvedTruss &truss);
     void drawConstrains(const Truss &truss);
     void drawHorizontalConstrain(double x, double y);
     void drawHorizontalSliderConstrain(double x, double y);

@@ -187,11 +187,7 @@ std::vector<arma::Col<double>> Solver::calculateGlobalInternalForces()
 
 std::vector<double> Solver::calculateReactionForces(std::vector<arma::Col<double>> &globalInternalForces)
 {
-    std::vector<double> result;
-    for(size_t i=0; i<truss.dofsCount; i++)
-    {
-        result.push_back(0);
-    }
+    std::vector<double> result(truss.dofsCount, 0);
 
     for (size_t element = 0; element < truss.elementsCount; element++)
     {

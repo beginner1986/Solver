@@ -16,6 +16,7 @@ void Drawer::draw(SolvedTruss &truss)
     drawForces(truss.getInputTruss(), truss.externalForces, svg::Color::Red);
     drawForces(truss, truss.reactionForces, svg::Color::Green);
     drawConstrains(truss.getInputTruss());
+    drawInternalStress(truss);
 
     document.save();
 }
@@ -150,6 +151,55 @@ void Drawer::drawForces(const Truss &truss, const std::vector<double> forces, sv
             arrow << svg::Point(x2, y2) << svg::Point(arrowX1, arrowY1) << svg::Point(arrowX2, arrowY2);
             document << arrow;
         }
+    }
+}
+
+void Drawer::drawInternalStress(const SolvedTruss &truss) 
+{
+    for (size_t element = 0; element < truss.elementsCount; element++)
+    {
+        arma::Row<uint> dofs = truss.topology.row(element);
+        double x1 = truss.coordinates.at(dofs(0));
+        double y1 = truss.coordinates.at(dofs(1));
+        double x2 = truss.coordinates.at(dofs(2));
+        double y2 = truss.coordinates.at(dofs(3));
+
+        x1 = x1 * scale + offset;
+        y1 = y1 * scale + offset;
+        x2 = x2 * scale + offset;
+        y2 = y2 * scale + offset;
+
+        double dx = abs(x2 - x1);
+        double dy = abs(y2 - y1);
+
+        double x;
+        double y;
+
+        // arrow 1
+        if(x1 < x2)
+            x = x1 + (dx / 3);
+        else
+            x = x1 - (dx / 3);
+
+        if(y1 < y2)
+            y = y1 + (dy / 3);
+        else
+            y = y1 - (dy / 3);
+
+        document << svg::Circle(svg::Point(abs(x), abs(y)), 20, svg::Fill(svg::Color::Orange));
+
+        // arrow 2
+        if(x1 < x2)
+            x = x2 - (dx / 3);
+        else
+            x = x2 + (dx / 3);
+
+        if(y1 < y2)
+            y = y2 - (dy / 3);
+        else
+            y = y2 + (dy / 3);
+
+        document << svg::Circle(svg::Point(abs(x), abs(y)), 20, svg::Fill(svg::Color::Orange));
     }
 }
 
