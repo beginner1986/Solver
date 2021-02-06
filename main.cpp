@@ -31,7 +31,10 @@ int main(int argc, char *argv[])
     std::cout << "Global displacements vector:" << std::endl;
     std::cout << solvedTruss.globalDisplacements << std::endl;
     std::cout << "Reaction forces vector:" << std::endl;
-    std::cout << solvedTruss.reactionForces << std::endl;
+    for(double force : solvedTruss.reactionForces)
+    {
+        std::cout << force << std::endl;
+    }
     std::cout << "Elements internal stress vectors:" << std::endl;
     for (size_t i = 0; i < solvedTruss.elementsInternalStress.size(); i++)
     {

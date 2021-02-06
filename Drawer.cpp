@@ -13,7 +13,8 @@ void Drawer::draw(SolvedTruss &truss)
     drawNodes(truss.getInputTruss(), svg::Color::Purple);
     drawElements(truss, svg::Color::Blue, 3);
     drawElements(truss.getInputTruss(), svg::Color::Magenta, 1);
-    drawForces(truss.getInputTruss(), svg::Color::Red);
+    drawForces(truss.getInputTruss(), truss.externalForces, svg::Color::Red);
+    drawForces(truss, truss.reactionForces, svg::Color::Green);
     drawConstrains(truss.getInputTruss());
 
     document.save();
@@ -83,11 +84,11 @@ void Drawer::drawElements(const Truss &truss, svg::Color color, double width)
     }
 }
 
-void Drawer::drawForces(const Truss &truss, svg::Color color)
+void Drawer::drawForces(const Truss &truss, const std::vector<double> forces, svg::Color color)
 {
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
-        double force = truss.externalForces.at(dof);
+        double force = forces.at(dof);
 
         if (force != 0)
         {
