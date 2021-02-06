@@ -13,7 +13,7 @@ void Drawer::draw(SolvedTruss &truss)
     drawNodes(truss.getInputTruss(), svg::Color::Purple);
     drawElements(truss, svg::Color::Blue, 3);
     drawElements(truss.getInputTruss(), svg::Color::Magenta, 1);
-    drawExternalForces(truss.getInputTruss());
+    drawForces(truss.getInputTruss(), svg::Color::Red);
     drawConstrains(truss.getInputTruss());
 
     document.save();
@@ -83,7 +83,7 @@ void Drawer::drawElements(const Truss &truss, svg::Color color, double width)
     }
 }
 
-void Drawer::drawExternalForces(const Truss &truss)
+void Drawer::drawForces(const Truss &truss, svg::Color color)
 {
     for (size_t dof = 0; dof < truss.dofsCount; dof++)
     {
@@ -115,7 +115,7 @@ void Drawer::drawExternalForces(const Truss &truss)
             else
                 y1 += (force > 0) ? -forceLineLnegth : forceLineLnegth;
 
-            document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, svg::Color::Red));
+            document << svg::Line(svg::Point(x1, y1), svg::Point(x2, y2), svg::Stroke(2, color));
 
             // arrowhead
             double arrowX1, arrowY1, arrowX2, arrowY2;
@@ -145,7 +145,7 @@ void Drawer::drawExternalForces(const Truss &truss)
                 arrowY2 = arrowY1;
             }
 
-            svg::Polygon arrow(svg::Fill(svg::Color::Red));
+            svg::Polygon arrow(svg::Fill((svg::Color)(color)));
             arrow << svg::Point(x2, y2) << svg::Point(arrowX1, arrowY1) << svg::Point(arrowX2, arrowY2);
             document << arrow;
         }
