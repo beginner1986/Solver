@@ -8,7 +8,7 @@ class SolvedTruss : public Truss
 public:
     arma::Col<double> globalForces;
     arma::Col<double> globalDisplacements;
-    arma::Col<double> reactionForces;
+    std::vector<double> reactionForces;
     std::vector<arma::Col<double>> elementsInternalStress;
 
 private:

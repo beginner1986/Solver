@@ -18,7 +18,7 @@ private:
     arma::Mat<double> globalStiffnessMatrix;
     arma::Col<double> globalForces;
     arma::Col<double> globalDisplacements;
-    arma::Col<double> reactionForces;
+    std::vector<double> reactionForces;
     std::vector<arma::Col<double>> elementsInternalStress;
 
 public:
@@ -27,7 +27,7 @@ public:
     void solve();
     arma::Col<double> getGlobalForces() const { return globalForces; }
     arma::Col<double> getGlobalDisplacements() const { return globalDisplacements; }
-    arma::Col<double> getReactionForces() const { return reactionForces; }
+    std::vector<double> getReactionForces() const { return reactionForces; }
     std::vector<arma::Col<double>> getElementsInternalStress() const { return elementsInternalStress; }
 
 private:
@@ -37,7 +37,7 @@ private:
     std::vector<arma::Col<double>> calculateGlobalInternalForces();
 
     arma::Col<double> calculateGlobalDisplacements(const arma::Mat<double> &globalStiffnessMatrix, arma::Col<double> &globalForces);
-    arma::Col<double> calculateReactionForces(std::vector<arma::Col<double>> &globalInternalForces);
+    std::vector<double> calculateReactionForces(std::vector<arma::Col<double>> &globalInternalForces);
     std::vector<arma::Col<double>> calculateElementsInternalStress(std::vector<arma::Col<double>> &globalInternalForces);
 };
 

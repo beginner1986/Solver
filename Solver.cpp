@@ -185,9 +185,9 @@ std::vector<arma::Col<double>> Solver::calculateGlobalInternalForces()
     return result;
 }
 
-arma::Col<double> Solver::calculateReactionForces(std::vector<arma::Col<double>> &globalInternalForces)
+std::vector<double> Solver::calculateReactionForces(std::vector<arma::Col<double>> &globalInternalForces)
 {
-    arma::Col<double> result(truss.dofsCount, arma::fill::zeros);
+    std::vector<double> result(truss.dofsCount, 0);
 
     for (size_t element = 0; element < truss.elementsCount; element++)
     {
@@ -203,7 +203,7 @@ arma::Col<double> Solver::calculateReactionForces(std::vector<arma::Col<double>>
             if (truss.constrains.at(dofs[i]))
             {
                 arma::Col<double> &globalElementsInternalForces = globalInternalForces.at(element);
-                result(dofs[i]) += globalElementsInternalForces(i);
+                result.at(dofs[i]) += globalElementsInternalForces(i);
             }
         }
     }
@@ -226,7 +226,7 @@ std::vector<arma::Col<double>> Solver::calculateElementsInternalStress(std::vect
             {0, 0, -sins[element], coss[element]}
         };
 
-        arma::solve(internalForcesLocal, transformationMatrix, globalInternalForces.at(element));
+        arma::solve(internalForcesLocal, transformationMatrix.i(), globalInternalForces.at(element));
         result.push_back(internalForcesLocal);
     }
 
