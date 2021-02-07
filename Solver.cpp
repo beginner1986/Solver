@@ -226,7 +226,7 @@ std::vector<arma::Col<double>> Solver::calculateElementsInternalStress(std::vect
             {0, 0, -sins[element], coss[element]}
         };
 
-        arma::solve(internalForcesLocal, transformationMatrix, globalInternalForces.at(element));
+        arma::solve(internalForcesLocal, transformationMatrix.i(), globalInternalForces.at(element));
         result.push_back(internalForcesLocal);
     }
 
