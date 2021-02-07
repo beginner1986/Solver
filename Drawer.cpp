@@ -169,11 +169,13 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         x2 = x2 * scale + offset;
         y2 = y2 * scale + offset;
 
-        double dx = abs(x2 - x1);
-        double dy = abs(y2 - y1);
+        double dx = x2 - x1;
+        double dy = y2 - y1;
         double length = sqrt(dx * dx + dy * dy);
         double cos = dx / length;
         double sin = dy / length;
+        dx = abs(dx);
+        dy = abs(dy);
 
         double x;
         double y;
