@@ -40,6 +40,7 @@ private:
     void drawVerticalConstrain(double x, double y);
     void drawVerticalSliderConstrain(double x, double y);
     void rotatePoint(const double centerX, const double centerY, double &pointX, double &pointY, const double sin, const double cos);
+    void drawArrowhead(const double x, const double y, const double sin, const double cos, bool reversed = false);
 };
 
 #endif // __DRAWER_H__

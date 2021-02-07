@@ -245,21 +245,7 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
                 sin *= -1;
                 cos *= -1;
             }
-
-            double arrowX1 = x - arrowLength;
-            double arrowY1 = y - arrowThickness;
-            rotatePoint(x, y, arrowX1, arrowY1, sin, cos);
-
-            double arrowX2 = x - arrowLength;
-            double arrowY2 = y + arrowThickness;
-            rotatePoint(x, y, arrowX2, arrowY2, sin, cos);
-
-            svg::Polygon arrow1(svg::Fill((svg::Color::Blue)));
-            arrow1 << svg::Point(x, y)
-                << svg::Point(arrowX1, arrowY1)
-                << svg::Point(arrowX2, arrowY2)
-                << svg::Point(x, y);
-            document << arrow1;
+            drawArrowhead(x, y, sin, cos);
 
             // arrow 2
             if (x1 < x2)
@@ -271,24 +257,7 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
             else
                 y = y2 + (dy / 3);
 
-            arrowX1 = x + arrowLength;
-            arrowY1 = y - arrowThickness;
-
-            rotatePoint(x, y, arrowX1, arrowY1, sin, cos);
-
-
-            arrowX2 = x + arrowLength;
-            arrowY2 = y + arrowThickness;
-            // arrow2 point rotation around (x, y)
-            rotatePoint(x, y, arrowX2, arrowY2, sin, cos);
-
-
-            svg::Polygon arrow2(svg::Fill((svg::Color::Blue)));
-            arrow2 << svg::Point(x, y)
-                << svg::Point(arrowX1, arrowY1)
-                << svg::Point(arrowX2, arrowY2)
-                << svg::Point(x, y);
-            document << arrow2;
+            drawArrowhead(x, y, sin, cos, true);
         }
     }
 }
@@ -473,4 +442,22 @@ void Drawer::rotatePoint(const double centerX, const double centerY, double &poi
 
     pointX = x2;
     pointY = y2;
+}
+
+void Drawer::drawArrowhead(const double x, const double y, const double sin, const double cos, bool reversed)
+{
+    double arrowX1 = (reversed ? x + arrowLength : x - arrowLength);
+    double arrowY1 = y - arrowThickness;
+    rotatePoint(x, y, arrowX1, arrowY1, sin, cos);
+
+    double arrowX2 = (reversed ? x + arrowLength : x - arrowLength);
+    double arrowY2 = y + arrowThickness;
+    rotatePoint(x, y, arrowX2, arrowY2, sin, cos);
+
+    svg::Polygon arrow1(svg::Fill((svg::Color::Blue)));
+    arrow1 << svg::Point(x, y)
+        << svg::Point(arrowX1, arrowY1)
+        << svg::Point(arrowX2, arrowY2)
+        << svg::Point(x, y);
+    document << arrow1;
 }
