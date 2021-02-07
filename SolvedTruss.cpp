@@ -7,7 +7,7 @@
 
 SolvedTruss::SolvedTruss(Truss &truss)
     : Truss(truss.A, truss.E, truss.coordinates, truss.topology, truss.constrains, truss.externalForces),
-    truss(truss)
+      truss(truss)
 {
 }
 
@@ -25,22 +25,22 @@ void SolvedTruss::solve()
     applyDisplacements(globalDisplacements);
 }
 
-void SolvedTruss::draw(std::string fileName) 
+void SolvedTruss::draw(std::string fileName)
 {
     Drawer trussDrawer(*this, fileName);
     trussDrawer.draw(*this);
 }
 
-double SolvedTruss::calculateScale() 
+double SolvedTruss::calculateScale()
 {
     double maxDisplacement = 0;
-    for(double d : globalDisplacements)
+    for (double d : globalDisplacements)
     {
         maxDisplacement = std::max(maxDisplacement, std::abs(d));
     }
 
     double maxCoordinate = 0;
-    for(double c : coordinates)
+    for (double c : coordinates)
     {
         maxCoordinate = std::max(maxCoordinate, std::abs(c));
     }
@@ -53,13 +53,11 @@ double SolvedTruss::calculateScale()
     std::cout << "Scale: " << scale << std::endl;
 
     return scale;
-    
-    //return 1e4;
 }
 
-void SolvedTruss::applyDisplacements(arma::Col<double> displacements) 
+void SolvedTruss::applyDisplacements(arma::Col<double> displacements)
 {
-    for(size_t c=0; c<dofsCount; c++)
+    for (size_t c = 0; c < dofsCount; c++)
     {
         coordinates.at(c) += (displacements.at(c) * displacementsScale);
     }

@@ -185,17 +185,7 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         dx = abs(dx);
         dy = abs(dy);
 
-        if (x1 < x2)
-            x = x1 + (dx / 3);
-        else
-            x = x1 - (dx / 3);
-
-        if (y1 < y2)
-            y = y1 + (dy / 3);
-        else
-            y = y1 - (dy / 3);
-
-        if (truss.elementsInternalStress.at(element).at(0) == 0
+        if (truss.elementsInternalStress.at(element).at(0) == 0 
             && truss.elementsInternalStress.at(element).at(1) == 0)
         {
             if (x1 < x2)
@@ -237,8 +227,18 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         }
         else
         {
+            if (x1 < x2)
+                x = x1 + (dx / 3);
+            else
+                x = x1 - (dx / 3);
+
+            if (y1 < y2)
+                y = y1 + (dy / 3);
+            else
+                y = y1 - (dy / 3);
+                
             // if element is stretched then rotate arrows 180 degrees
-            if (truss.elementsInternalStress.at(element).at(0) < 0
+            if (truss.elementsInternalStress.at(element).at(0) < 0 
                 || truss.elementsInternalStress.at(element).at(1) < 0)
             {
                 // angle alpha += 180 degrees
@@ -247,7 +247,6 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
             }
             drawArrowhead(x, y, sin, cos);
 
-            // arrow 2
             if (x1 < x2)
                 x = x2 - (dx / 3);
             else
@@ -456,8 +455,8 @@ void Drawer::drawArrowhead(const double x, const double y, const double sin, con
 
     svg::Polygon arrow1(svg::Fill((svg::Color::Blue)));
     arrow1 << svg::Point(x, y)
-        << svg::Point(arrowX1, arrowY1)
-        << svg::Point(arrowX2, arrowY2)
-        << svg::Point(x, y);
+           << svg::Point(arrowX1, arrowY1)
+           << svg::Point(arrowX2, arrowY2)
+           << svg::Point(x, y);
     document << arrow1;
 }
