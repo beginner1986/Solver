@@ -39,6 +39,7 @@ private:
     void drawHorizontalSliderConstrain(double x, double y);
     void drawVerticalConstrain(double x, double y);
     void drawVerticalSliderConstrain(double x, double y);
+    void rotatePoint(const double centerX, const double centerY, double &pointX, double &pointY, const double sin, const double cos);
 };
 
 #endif // __DRAWER_H__

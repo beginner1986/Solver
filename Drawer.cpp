@@ -185,7 +185,6 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         dx = abs(dx);
         dy = abs(dy);
 
-        // arrow 1
         if (x1 < x2)
             x = x1 + (dx / 3);
         else
@@ -213,28 +212,28 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
             double lineX2 = x - (arrowThickness / 2) + (arrowThickness / 4);
             double lineY2 = y - arrowThickness * 2;
 
-            double lineX1rot = (lineX1 - x) * cos - (lineY1 - y) * sin + x;
-            double lineY1rot = (lineX1 - x) * sin + (lineY1 - y) * cos + y;
-            double lineX2rot = (lineX2 - x) * cos - (lineY2 - y) * sin + x;
-            double lineY2rot = (lineX2 - x) * sin + (lineY2 - y) * cos + y;
+            rotatePoint(x, y, lineX1, lineY1, sin, cos);
+            rotatePoint(x, y, lineX2, lineY2, sin, cos);
+
             document << svg::Line(
-                svg::Point(lineX1rot, lineY1rot),
-                svg::Point(lineX2rot, lineY2rot),
-                svg::Stroke(3, svg::Color::Blue));
+                svg::Point(lineX1, lineY1),
+                svg::Point(lineX2, lineY2),
+                svg::Stroke(3, svg::Color::Blue)
+            );
 
             lineX1 = x + (arrowThickness / 2) - (arrowThickness / 4);
             lineY1 = y + arrowThickness * 2;
             lineX2 = x + (arrowThickness / 2) + (arrowThickness / 4);
             lineY2 = y - arrowThickness * 2;
 
-            lineX1rot = (lineX1 - x) * cos - (lineY1 - y) * sin + x;
-            lineY1rot = (lineX1 - x) * sin + (lineY1 - y) * cos + y;
-            lineX2rot = (lineX2 - x) * cos - (lineY2 - y) * sin + x;
-            lineY2rot = (lineX2 - x) * sin + (lineY2 - y) * cos + y;
+            rotatePoint(x, y, lineX1, lineY1, sin, cos);
+            rotatePoint(x, y, lineX2, lineY2, sin, cos);
+
             document << svg::Line(
-                svg::Point(lineX1rot, lineY1rot),
-                svg::Point(lineX2rot, lineY2rot),
-                svg::Stroke(3, svg::Color::Blue));
+                svg::Point(lineX1, lineY1),
+                svg::Point(lineX2, lineY2),
+                svg::Stroke(3, svg::Color::Blue)
+            );
         }
         else
         {
@@ -249,20 +248,16 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
 
             double arrowX1 = x - arrowLength;
             double arrowY1 = y - arrowThickness;
-            // arrow1 point rotation around (x, y)
-            double arrowX1rot = (arrowX1 - x) * cos - (arrowY1 - y) * sin + x;
-            double arrowY1rot = (arrowX1 - x) * sin + (arrowY1 - y) * cos + y;
+            rotatePoint(x, y, arrowX1, arrowY1, sin, cos);
 
             double arrowX2 = x - arrowLength;
             double arrowY2 = y + arrowThickness;
-            // arrow2 point rotation around (x, y)
-            double arrowX2rot = (arrowX2 - x) * cos - (arrowY2 - y) * sin + x;
-            double arrowY2rot = (arrowX2 - x) * sin + (arrowY2 - y) * cos + y;
+            rotatePoint(x, y, arrowX2, arrowY2, sin, cos);
 
             svg::Polygon arrow1(svg::Fill((svg::Color::Blue)));
             arrow1 << svg::Point(x, y)
-                << svg::Point(arrowX1rot, arrowY1rot)
-                << svg::Point(arrowX2rot, arrowY2rot)
+                << svg::Point(arrowX1, arrowY1)
+                << svg::Point(arrowX2, arrowY2)
                 << svg::Point(x, y);
             document << arrow1;
 
@@ -279,20 +274,19 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
             arrowX1 = x + arrowLength;
             arrowY1 = y - arrowThickness;
 
-            // arrow1 point rotation around (x, y)
-            arrowX1rot = (arrowX1 - x) * cos - (arrowY1 - y) * sin + x;
-            arrowY1rot = (arrowX1 - x) * sin + (arrowY1 - y) * cos + y;
+            rotatePoint(x, y, arrowX1, arrowY1, sin, cos);
+
 
             arrowX2 = x + arrowLength;
             arrowY2 = y + arrowThickness;
             // arrow2 point rotation around (x, y)
-            arrowX2rot = (arrowX2 - x) * cos - (arrowY2 - y) * sin + x;
-            arrowY2rot = (arrowX2 - x) * sin + (arrowY2 - y) * cos + y;
+            rotatePoint(x, y, arrowX2, arrowY2, sin, cos);
+
 
             svg::Polygon arrow2(svg::Fill((svg::Color::Blue)));
             arrow2 << svg::Point(x, y)
-                << svg::Point(arrowX1rot, arrowY1rot)
-                << svg::Point(arrowX2rot, arrowY2rot)
+                << svg::Point(arrowX1, arrowY1)
+                << svg::Point(arrowX2, arrowY2)
                 << svg::Point(x, y);
             document << arrow2;
         }
@@ -470,4 +464,13 @@ void Drawer::drawVerticalSliderConstrain(double x, double y)
         svg::Point(x + fixSize * 1 / 5, y - fixSize),
         svg::Point(x + fixSize * 2 / 5, y - fixSize * 2 / 3),
         svg::Stroke(2, svg::Color::Green));
+}
+
+void Drawer::rotatePoint(const double centerX, const double centerY, double &pointX, double &pointY, const double sin, const double cos)
+{
+    double x2 = (pointX - centerX) * cos - (pointY - centerY) * sin + centerX;
+    double y2 = (pointX - centerX) * sin + (pointY - centerY) * cos + centerY;
+
+    pointX = x2;
+    pointY = y2;
 }
