@@ -1,6 +1,6 @@
 #include "Drawer.h"
 
-Drawer::Drawer(SolvedTruss &truss, std::string fileName) 
+Drawer::Drawer(SolvedTruss &truss, std::string fileName)
     : truss(truss), fileName(fileName)
 {
     dimensions = calculateDimensions(truss);
@@ -154,7 +154,7 @@ void Drawer::drawForces(const Truss &truss, const std::vector<double> forces, sv
     }
 }
 
-void Drawer::drawInternalStress(const SolvedTruss &truss) 
+void Drawer::drawInternalStress(const SolvedTruss &truss)
 {
     for (size_t element = 0; element < truss.elementsCount; element++)
     {
@@ -164,32 +164,87 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         double x2 = truss.coordinates.at(dofs(2));
         double y2 = truss.coordinates.at(dofs(3));
 
+        // start node coordinates
         x1 = x1 * scale + offset;
         y1 = y1 * scale + offset;
+        // end node coordinates
         x2 = x2 * scale + offset;
         y2 = y2 * scale + offset;
 
+        // default sin and cos for elements compression
         double dx = x2 - x1;
         double dy = y2 - y1;
         double length = sqrt(dx * dx + dy * dy);
         double cos = dx / length;
         double sin = dy / length;
-        dx = abs(dx);
-        dy = abs(dy);
 
         double x;
         double y;
 
+        // eliminate negative coordinates
+        dx = abs(dx);
+        dy = abs(dy);
+
         // arrow 1
-        if(x1 < x2)
+        if (x1 < x2)
             x = x1 + (dx / 3);
         else
             x = x1 - (dx / 3);
 
-        if(y1 < y2)
+        if (y1 < y2)
             y = y1 + (dy / 3);
         else
             y = y1 - (dy / 3);
+
+        if (truss.elementsInternalStress.at(element).at(0) == 0 && truss.elementsInternalStress.at(element).at(1) == 0)
+        {
+            if (x1 < x2)
+                x = x1 + (dx / 2);
+            else
+                x = x1 - (dx / 2);
+
+            if (y1 < y2)
+                y = y1 + (dy / 2);
+            else
+                y = y1 - (dy / 2);
+
+            double lineX1 = x - (arrowThickness / 2) - (arrowThickness / 4);
+            double lineY1 = y + arrowThickness;
+            double lineX2 = x - (arrowThickness / 2) + (arrowThickness / 4);
+            ;
+            double lineY2 = y - arrowThickness;
+
+            double lineX1rot = (lineX1 - x) * cos - (lineY1 - y) * sin + x;
+            double lineY1rot = (lineX1 - x) * sin + (lineY1 - y) * cos + y;
+            double lineX2rot = (lineX2 - x) * cos - (lineY2 - y) * sin + x;
+            double lineY2rot = (lineX2 - x) * sin + (lineY2 - y) * cos + y;
+            document << svg::Line(
+                svg::Point(lineX1rot, lineY1rot),
+                svg::Point(lineX2rot, lineY2rot),
+                svg::Stroke(3, svg::Color::Blue));
+
+            lineX1 = x + (arrowThickness / 2) - (arrowThickness / 4);
+            lineY1 = y + arrowThickness;
+            lineX2 = x + (arrowThickness / 2) + (arrowThickness / 4);
+            lineY2 = y - arrowThickness;
+
+            lineX1rot = (lineX1 - x) * cos - (lineY1 - y) * sin + x;
+            lineY1rot = (lineX1 - x) * sin + (lineY1 - y) * cos + y;
+            lineX2rot = (lineX2 - x) * cos - (lineY2 - y) * sin + x;
+            lineY2rot = (lineX2 - x) * sin + (lineY2 - y) * cos + y;
+            document << svg::Line(
+                svg::Point(lineX1rot, lineY1rot),
+                svg::Point(lineX2rot, lineY2rot),
+                svg::Stroke(3, svg::Color::Blue));
+
+            continue;
+        }
+
+        /*
+        // angle alpha += 180 degrees
+        sin *= -1;
+        cos *= -1;
+        */
 
         double arrowX1 = x - arrowLength;
         double arrowY1 = y - arrowThickness;
@@ -204,19 +259,18 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         double arrowY2rot = (arrowX2 - x) * sin + (arrowY2 - y) * cos + y;
 
         svg::Polygon arrow1(svg::Fill((svg::Color::Blue)));
-            arrow1 << svg::Point(x, y) 
-                << svg::Point(arrowX1rot, arrowY1rot) 
-                << svg::Point(arrowX2rot, arrowY2rot) 
-                << svg::Point(x, y);
+        arrow1 << svg::Point(x, y)
+               << svg::Point(arrowX1rot, arrowY1rot)
+               << svg::Point(arrowX2rot, arrowY2rot)
+               << svg::Point(x, y);
         document << arrow1;
 
         // arrow 2
-        if(x1 < x2)
+        if (x1 < x2)
             x = x2 - (dx / 3);
         else
             x = x2 + (dx / 3);
-
-        if(y1 < y2)
+        if (y1 < y2)
             y = y2 - (dy / 3);
         else
             y = y2 + (dy / 3);
@@ -235,10 +289,10 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         arrowY2rot = (arrowX2 - x) * sin + (arrowY2 - y) * cos + y;
 
         svg::Polygon arrow2(svg::Fill((svg::Color::Blue)));
-            arrow2 << svg::Point(x, y) 
-                << svg::Point(arrowX1rot, arrowY1rot) 
-                << svg::Point(arrowX2rot, arrowY2rot) 
-                << svg::Point(x, y);
+        arrow2 << svg::Point(x, y)
+               << svg::Point(arrowX1rot, arrowY1rot)
+               << svg::Point(arrowX2rot, arrowY2rot)
+               << svg::Point(x, y);
         document << arrow2;
     }
 }
@@ -335,25 +389,21 @@ void Drawer::drawHorizontalSliderConstrain(double x, double y)
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y + fixSize * 3 / 4),
         svg::Point(x + direction * (fixSize * 2 / 3), y - fixSize * 3 / 4),
-        svg::Stroke(2, svg::Color::Green)
-    );
+        svg::Stroke(2, svg::Color::Green));
 
     // diagonal lines
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y + fixSize * 2 / 5),
         svg::Point(x + direction * fixSize, y + fixSize / 5),
-        svg::Stroke(2, svg::Color::Green)
-    );
+        svg::Stroke(2, svg::Color::Green));
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y),
         svg::Point(x + direction * fixSize, y - fixSize / 5),
-        svg::Stroke(2, svg::Color::Green)
-    );
+        svg::Stroke(2, svg::Color::Green));
     document << svg::Line(
         svg::Point(x + direction * (fixSize * 2 / 3), y - fixSize * 2 / 5),
         svg::Point(x + direction * fixSize, y - fixSize * 3 / 5),
-        svg::Stroke(2, svg::Color::Green)
-    );
+        svg::Stroke(2, svg::Color::Green));
 }
 
 void Drawer::drawVerticalConstrain(double x, double y)
@@ -403,8 +453,7 @@ void Drawer::drawVerticalSliderConstrain(double x, double y)
     document << svg::Line(
         svg::Point(x - fixSize * 3 / 4, y - fixSize * 2 / 3),
         svg::Point(x + fixSize * 3 / 4, y - fixSize * 2 / 3),
-        svg::Stroke(2, svg::Color::Green)
-    );
+        svg::Stroke(2, svg::Color::Green));
 
     // diagonal lines
     document << svg::Line(
