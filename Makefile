@@ -5,7 +5,7 @@ FLAGS = -Wall -pedantic -O1 --std=c++11 -larmadillo
 FLAGS_OMP = #-fopenmp
 
 #Source files that should be compiled
-SOURCES = main.cpp Truss.cpp Solver.cpp Drawer.cpp FileReader.cpp SolvedTruss.cpp
+SOURCES = main.cpp Truss.cpp Solver.cpp Drawer.cpp FileReader.cpp SolvedTruss.cpp FileWriter.cpp
 
 #Output files that should be cleared
 OUTPUT = solver
@@ -27,3 +27,4 @@ solver:
 clean:
 	rm -rf $(OUTPUT)
 	rm -rf *.svg
+	rm -rf *.csv

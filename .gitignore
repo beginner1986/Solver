@@ -4,5 +4,8 @@ solver
 # Generated vector graphics
 *.svg
 
+# Files with calculated values
+*.csv
+
 # Visual Studio Code files
 .vscode/

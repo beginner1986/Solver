@@ -47,11 +47,6 @@ double SolvedTruss::calculateScale()
 
     double scale = maxCoordinate / maxDisplacement / 10;
 
-    std::cout << "Max coordinate: " << maxCoordinate << std::endl;
-    std::cout << "Max displacement: " << maxDisplacement << std::endl;
-
-    std::cout << "Scale: " << scale << std::endl;
-
     return scale;
 }
 

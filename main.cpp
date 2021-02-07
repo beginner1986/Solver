@@ -5,6 +5,7 @@
 #include "FileReader.h"
 #include "Truss.h"
 #include "SolvedTruss.h"
+#include "FileWriter.h"
 
 int main(int argc, char *argv[])
 {
@@ -41,6 +42,9 @@ int main(int argc, char *argv[])
         std::cout << "\tElement " << i << std::endl;
         std::cout << solvedTruss.elementsInternalStress.at(i) << std::endl;
     }
+
+    FileWriter writer(solvedTruss);
+    writer.save("result.csv");
 
     return 0;
 }
