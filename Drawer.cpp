@@ -171,6 +171,9 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
 
         double dx = abs(x2 - x1);
         double dy = abs(y2 - y1);
+        double length = sqrt(dx * dx + dy * dy);
+        double cos = dx / length;
+        double sin = dy / length;
 
         double x;
         double y;
@@ -186,7 +189,24 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         else
             y = y1 - (dy / 3);
 
-        document << svg::Circle(svg::Point(abs(x), abs(y)), 20, svg::Fill(svg::Color::Orange));
+        double arrowX1 = x - arrowLength;
+        double arrowY1 = y - arrowThickness;
+        // arrow1 point rotation around (x, y)
+        double arrowX1rot = (arrowX1 - x) * cos - (arrowY1 - y) * sin + x;
+        double arrowY1rot = (arrowX1 - x) * sin + (arrowY1 - y) * cos + y;
+
+        double arrowX2 = x - arrowLength;
+        double arrowY2 = y + arrowThickness;
+        // arrow2 point rotation around (x, y)
+        double arrowX2rot = (arrowX2 - x) * cos - (arrowY2 - y) * sin + x;
+        double arrowY2rot = (arrowX2 - x) * sin + (arrowY2 - y) * cos + y;
+
+        svg::Polygon arrow1(svg::Fill((svg::Color::Blue)));
+            arrow1 << svg::Point(x, y) 
+                << svg::Point(arrowX1rot, arrowY1rot) 
+                << svg::Point(arrowX2rot, arrowY2rot) 
+                << svg::Point(x, y);
+        document << arrow1;
 
         // arrow 2
         if(x1 < x2)
@@ -199,7 +219,25 @@ void Drawer::drawInternalStress(const SolvedTruss &truss)
         else
             y = y2 + (dy / 3);
 
-        document << svg::Circle(svg::Point(abs(x), abs(y)), 20, svg::Fill(svg::Color::Orange));
+        arrowX1 = x + arrowLength;
+        arrowY1 = y - arrowThickness;
+
+        // arrow1 point rotation around (x, y)
+        arrowX1rot = (arrowX1 - x) * cos - (arrowY1 - y) * sin + x;
+        arrowY1rot = (arrowX1 - x) * sin + (arrowY1 - y) * cos + y;
+
+        arrowX2 = x + arrowLength;
+        arrowY2 = y + arrowThickness;
+        // arrow2 point rotation around (x, y)
+        arrowX2rot = (arrowX2 - x) * cos - (arrowY2 - y) * sin + x;
+        arrowY2rot = (arrowX2 - x) * sin + (arrowY2 - y) * cos + y;
+
+        svg::Polygon arrow2(svg::Fill((svg::Color::Blue)));
+            arrow2 << svg::Point(x, y) 
+                << svg::Point(arrowX1rot, arrowY1rot) 
+                << svg::Point(arrowX2rot, arrowY2rot) 
+                << svg::Point(x, y);
+        document << arrow2;
     }
 }
 
