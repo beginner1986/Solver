@@ -26,5 +26,5 @@ solver:
 #Rule to clear out output files and generated vector graphics
 clean:
 	rm -rf $(OUTPUT)
-	rm -rf *.svg
-	rm -rf *.csv
+	rm -rf output/*.svg
+	rm -rf output/*.csv
