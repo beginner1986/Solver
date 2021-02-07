@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <armadillo>
+#include <locale>
 
 #include "SolvedTruss.h"
 

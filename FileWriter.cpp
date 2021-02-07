@@ -21,21 +21,35 @@ void FileWriter::save(std::string fileName)
         exit(-1);
     }
 
-    file << "Global forces vector:" << std::endl;
-    file << globalForces << std::endl;
-    /*
-    std::cout << "Global displacements vector:" << std::endl;
-    std::cout << solvedTruss.globalDisplacements << std::endl;
-    std::cout << "Reaction forces vector:" << std::endl;
-    for(double force : solvedTruss.reactionForces)
+    size_t dofsCount = globalDisplacements.size();
+
+    file << "DOF #; ";
+    for(size_t i=0; i<dofsCount; i++)
+        file << i << "; ";
+    file << std::endl;
+
+    file << "Global forces; ";
+    for(double f : globalForces)
+        file << f << "; ";
+    file << std::endl;
+
+    file << "Global displacements; ";
+    for(double d : globalDisplacements)
+        file << d << "; ";
+    file << std::endl;
+
+    file << "Reaction forces; ";
+    for(double r : reactionForces)
+        file << r << "; ";
+    file << std::endl << std::endl;
+
+    file << "Element #; x1; y1; x2; y2" << std::endl;
+    for(size_t e=0; e<elementsInternalStress.size(); e++)
     {
-        std::cout << force << std::endl;
+        file << e << "; ";
+        for(double s : elementsInternalStress.at(e))
+            file << s << "; ";
+        
+        file << std::endl;
     }
-    std::cout << "Elements internal stress vectors:" << std::endl;
-    for (size_t i = 0; i < solvedTruss.elementsInternalStress.size(); i++)
-    {
-        std::cout << "\tElement " << i << std::endl;
-        std::cout << solvedTruss.elementsInternalStress.at(i) << std::endl;
-    }
-    */
 }
