@@ -26,34 +26,59 @@ int main(int argc, char *argv[])
     for(int i=0; i<argc; i++)
         parameters.push_back(std::string(argv[i]));
 
+    bool noout = false;
+    if(std::find(parameters.begin(), parameters.end(), "-noout") != parameters.end())
+        noout = true;
+    bool sparse = false;
+    if(std::find(parameters.begin(), parameters.end(), "-sparse") != parameters.end())
+        sparse = true;
+    bool dense = false;
+    if(std::find(parameters.begin(), parameters.end(), "-dense") != parameters.end())
+        dense = true;
     bool times = false;
     if(std::find(parameters.begin(), parameters.end(), "-times") != parameters.end())
         times = true;
+    bool experiment = false;
+    if(std::find(parameters.begin(), parameters.end(), "-experiment") != parameters.end())
+    {
+        experiment = true;
+        times = true;
+        noout = true;
+    }
 
     // read data from file
     std::string path = argv[1];
-    std::cout << path << std::endl;
+    // std::cout << path << std::endl;
     FileReader reader(path);
     Truss truss = reader.read();
+
+    if(experiment)
+    {
+        std::cout << path << "; "
+            << truss.dofsCount << "; " 
+            << truss.nodesCount << "; " 
+            << truss.elementsCount << "; ";
+        times = true;
+    }
 
     // solving the truss
     SolvedTruss solvedTruss(truss);
     SOLVER_OPTS solverOptions;
 
     // choose the solver
-    if(std::find(parameters.begin(), parameters.end(), "-dense") != parameters.end())
+    if(dense)
     {
-        std::cout << "DENSE solver" << std::endl;
+        std::cout << "DENSE solver; ";
         solverOptions = SOLVER_OPTS::DENSE;
     }
-    else if(std::find(parameters.begin(), parameters.end(), "-sparse") != parameters.end())
+    else if(sparse)
     {
-        std::cout << "SPARSE solver" << std::endl;
+        std::cout << "SPARSE solver; ";
         solverOptions = SOLVER_OPTS::SPARSE;
     }
     else
     {
-        std::cout << "ERROR: you must specify solver type as program parameter: -dense or -sparse" << std::endl;
+        std::cout << std::endl << "ERROR: you must specify solver type as program parameter: -dense or -sparse" << std::endl;
         exit(-1);
     }
 
@@ -62,10 +87,10 @@ int main(int argc, char *argv[])
     auto solveEnd = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed = solveEnd - solveStart;
     if(times)
-        std::cout << elapsed.count() << "s" << std::endl;
+        std::cout << elapsed.count() << "; ";
     
     // generate outputs *.svg & *.csv
-    if(std::find(parameters.begin(), parameters.end(), "-noout") == parameters.end())
+    if(!noout)
     {
         printResults(solvedTruss);
 
@@ -79,7 +104,7 @@ int main(int argc, char *argv[])
     auto end = std::chrono::steady_clock::now();
     elapsed = end - start;
     if(times)
-        std::cout << elapsed.count() << "s" << std::endl;
+        std::cout << elapsed.count() << std::endl;
 
     return 0;
 }
@@ -90,6 +115,7 @@ void printUsage()
     std::cout << "\t-noout\t- don't print results on the screen, no SVG or CVS file generated." << std::endl;
     std::cout << "\t-sparse\t- saprse global stiffness matrix." << std::endl;
     std::cout << "\t-dense\t- dense global stiffness matrix." << std::endl;
+    std::cout << "\t-experiment\t- prints input truss paramaters and time performance." << std::endl;
     std::cout << "\t-times\t- print solving time and program summary time." << std::endl;
 
     exit(0);
@@ -106,8 +132,7 @@ std::string makeFileName(std::string path)
 
 void printResults(const SolvedTruss &solvedTruss)
 {
-    std::cout << "RESULTS" << std::endl;
-    std::cout << "Global forces vector:" << std::endl;
+    std::cout << std::endl << "Global forces vector:" << std::endl;
     std::cout << solvedTruss.globalForces << std::endl;
     std::cout << "Global displacements vector:" << std::endl;
     std::cout << solvedTruss.globalDisplacements << std::endl;
