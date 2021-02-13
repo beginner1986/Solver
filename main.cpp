@@ -18,7 +18,9 @@ int main(int argc, char *argv[])
     if (argc < 2)
     {
         std::cout << "Usage: ./solver inputFile.truss" << std::endl;
-        std::cout << "\t-none - don't print results on the screen, no SVG or CVS file generated." << std::endl;
+        std::cout << "\t-noout\t- don't print results on the screen, no SVG or CVS file generated." << std::endl;
+        std::cout << "\t-sparse\t- saprse global stiffness matrix." << std::endl;
+        std::cout << "\t-dense\t- dense global stiffness matrix." << std::endl;
 
         exit(0);
     }
@@ -34,9 +36,27 @@ int main(int argc, char *argv[])
 
     std::cout << "Solving the truss..." << std::endl;
     SolvedTruss solvedTruss(truss);
-    solvedTruss.solve();
+    SOLVER_OPTS solverOptions;
+
+    if(std::find(parameters.begin(), parameters.end(), "-dense") != parameters.end())
+    {
+        std::cout << "DENSE solver" << std::endl;
+        solverOptions = SOLVER_OPTS::DENSE;
+    }
+    else if(std::find(parameters.begin(), parameters.end(), "-sparse") != parameters.end())
+    {
+        std::cout << "SPARSE solver" << std::endl;
+        solverOptions = SOLVER_OPTS::SPARSE;
+    }
+    else
+    {
+        std::cout << "ERROR: you must specify solver type as program parameter: -dense or -sparse" << std::endl;
+        exit(-1);
+    }
+
+    solvedTruss.solve(solverOptions);
     
-    if(std::find(parameters.begin(), parameters.end(), "-none") == parameters.end())
+    if(std::find(parameters.begin(), parameters.end(), "-noout") == parameters.end())
     {
         printResults(solvedTruss);
 
