@@ -1,11 +1,10 @@
 #General Makefile variables
-CC = gcc
-CCPLUS = g++
-FLAGS = -Wall -pedantic -O1 --std=c++11 -larmadillo 
+CXX = g++
+CXXFLAGS = -Wall -pedantic -O1 --std=c++11 -larmadillo 
 FLAGS_OMP = #-fopenmp
 
 #Source files that should be compiled
-SOURCES = main.cpp Truss.cpp Solver.cpp Drawer.cpp FileReader.cpp SolvedTruss.cpp FileWriter.cpp
+SRC = $(wildcard *.cpp)
 
 #Output files that should be cleared
 OUTPUT = solver
@@ -21,7 +20,7 @@ build: solver
 
 #Rule to build the solver program
 solver:
-	$(CCPLUS) $(SOURCES) -o $(OUTPUT) $(FLAGS) $(FLAGS_OMP)
+	$(CXX) $(SRC) -o $@ $(CXXFLAGS) $(FLAGS_OMP)
 
 #Rule to clear out output files and generated vector graphics
 clean:
