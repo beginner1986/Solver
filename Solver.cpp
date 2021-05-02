@@ -167,7 +167,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
         }
     }
 
-    arma::Col<double> reducedDisplacements(truss.dofsCount);
+    arma::Col<double> reducedDisplacements(reducedForces.n_rows);
     arma::solve(reducedDisplacements, reducedStiffness, reducedForces);
 
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
@@ -200,7 +200,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::SpMat<double>
         }
     }
 
-    arma::Col<double> reducedDisplacements(truss.dofsCount);
+    arma::Col<double> reducedDisplacements(reducedForces.n_rows);
     reducedDisplacements = arma::spsolve(reducedStiffness, reducedForces);
 
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
