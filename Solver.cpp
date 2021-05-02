@@ -1,5 +1,8 @@
 #include "Solver.h"
 
+void luSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
+void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
+
 void Solver::solve(SOLVER_OPTS opts)
 {
     std::tie(sins, coss, lengths) = calculateSinCosLen();
@@ -170,6 +173,9 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
     arma::Col<double> reducedDisplacements(reducedForces.n_rows);
     arma::solve(reducedDisplacements, reducedStiffness, reducedForces);
 
+    arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
+    std::cout << "Wektor reszt:" << std::endl << r << std::endl;
+
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
 
     uint count = 0;
@@ -292,4 +298,18 @@ std::vector<arma::Col<double>> Solver::calculateElementsInternalStress(std::vect
     }
 
     return result;
+}
+
+void luSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+{
+    arma::Mat<double> L, U;
+    arma::lu(L, U, stiffness);
+    displacements = U.i() * L.i() * forces;
+}
+
+void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+{
+    arma::Mat<double> Q, R;
+    arma::qr(Q, R, stiffness);
+    displacements = R.i() * Q.t() * forces;
 }
