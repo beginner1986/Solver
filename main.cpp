@@ -2,6 +2,7 @@
 #include <vector>
 #include <armadillo>
 #include <regex>
+#include <chrono>
 
 #include "FileReader.h"
 #include "Truss.h"
@@ -10,46 +11,114 @@
 
 #define OUTPUT_FOLDER "output/"
 
+void printUsage();
 std::string makeFileName(std::string path);
 void printResults(const SolvedTruss &solvedTruss);
 
 int main(int argc, char *argv[])
 {
-    if (argc < 2)
-    {
-        std::cout << "Usage: ./solver inputFile.truss" << std::endl;
-        std::cout << "\t-none - don't print results on the screen, no SVG or CVS file generated." << std::endl;
+    auto start = std::chrono::steady_clock::now();
 
-        exit(0);
-    }
+    if (argc < 2)
+        printUsage();
 
     std::vector<std::string> parameters;
     for(int i=0; i<argc; i++)
         parameters.push_back(std::string(argv[i]));
 
+    bool noout = false;
+    if(std::find(parameters.begin(), parameters.end(), "-noout") != parameters.end())
+        noout = true;
+    bool sparse = false;
+    if(std::find(parameters.begin(), parameters.end(), "-sparse") != parameters.end())
+        sparse = true;
+    bool dense = false;
+    if(std::find(parameters.begin(), parameters.end(), "-dense") != parameters.end())
+        dense = true;
+    bool times = false;
+    if(std::find(parameters.begin(), parameters.end(), "-times") != parameters.end())
+        times = true;
+    bool experiment = false;
+    if(std::find(parameters.begin(), parameters.end(), "-experiment") != parameters.end())
+    {
+        experiment = true;
+        times = true;
+        noout = true;
+    }
+
+    // read data from file
     std::string path = argv[1];
-    std::cout << "Reading the input truss from file..." << std::endl;
+    // std::cout << path << std::endl;
     FileReader reader(path);
     Truss truss = reader.read();
 
-    std::cout << "Solving the truss..." << std::endl;
+    if(experiment)
+    {
+        std::cout << path << "; "
+            << truss.dofsCount << "; " 
+            << truss.nodesCount << "; " 
+            << truss.elementsCount << "; ";
+        times = true;
+    }
+
+    // solving the truss
     SolvedTruss solvedTruss(truss);
-    solvedTruss.solve();
+    SOLVER_OPTS solverOptions;
+
+    // choose the solver
+    if(dense)
+    {
+        std::cout << "DENSE solver; ";
+        solverOptions = SOLVER_OPTS::DENSE;
+    }
+    else if(sparse)
+    {
+        std::cout << "SPARSE solver; ";
+        solverOptions = SOLVER_OPTS::SPARSE;
+    }
+    else
+    {
+        std::cout << std::endl << "ERROR: you must specify solver type as program parameter: -dense or -sparse" << std::endl;
+        exit(-1);
+    }
+
+    auto solveStart = std::chrono::steady_clock::now();
+    solvedTruss.solve(solverOptions);
+    auto solveEnd = std::chrono::steady_clock::now();
+    std::chrono::duration<double> elapsed = solveEnd - solveStart;
+    if(times)
+        std::cout << elapsed.count() << "; ";
     
-    if(std::find(parameters.begin(), parameters.end(), "-none") == parameters.end())
+    // generate outputs *.svg & *.csv
+    if(!noout)
     {
         printResults(solvedTruss);
 
         std::string fileName = makeFileName(path);
-        std::cout << "Drawing solved truss into SVG file..." << std::endl;
         solvedTruss.draw(fileName + ".svg");
 
-        std::cout << "Sawing calculations results into CSV file..." << std::endl;
         FileWriter writer(solvedTruss);
         writer.save(fileName + ".csv");
     }
 
+    auto end = std::chrono::steady_clock::now();
+    elapsed = end - start;
+    if(times)
+        std::cout << elapsed.count() << std::endl;
+
     return 0;
+}
+
+void printUsage() 
+{
+    std::cout << "Usage: ./solver inputFile.truss" << std::endl;
+    std::cout << "\t-noout\t- don't print results on the screen, no SVG or CVS file generated." << std::endl;
+    std::cout << "\t-sparse\t- saprse global stiffness matrix." << std::endl;
+    std::cout << "\t-dense\t- dense global stiffness matrix." << std::endl;
+    std::cout << "\t-experiment\t- prints input truss paramaters and time performance." << std::endl;
+    std::cout << "\t-times\t- print solving time and program summary time." << std::endl;
+
+    exit(0);
 }
 
 std::string makeFileName(std::string path)
@@ -63,8 +132,7 @@ std::string makeFileName(std::string path)
 
 void printResults(const SolvedTruss &solvedTruss)
 {
-    std::cout << "RESULTS" << std::endl;
-    std::cout << "Global forces vector:" << std::endl;
+    std::cout << std::endl << "Global forces vector:" << std::endl;
     std::cout << solvedTruss.globalForces << std::endl;
     std::cout << "Global displacements vector:" << std::endl;
     std::cout << solvedTruss.globalDisplacements << std::endl;

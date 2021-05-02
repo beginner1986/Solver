@@ -2,6 +2,7 @@
 #define __CALCULATEDTRUSS_H__
 
 #include "Truss.h"
+#include "Solver.h"
 
 class SolvedTruss : public Truss
 {
@@ -17,7 +18,7 @@ private:
 
 public:
     SolvedTruss(Truss &truss);
-    void solve();
+    void solve(SOLVER_OPTS opts);
     void draw(std::string fileName);
     Truss getInputTruss() const { return truss; }
 

@@ -2,7 +2,6 @@
 #include <armadillo>
 
 #include "SolvedTruss.h"
-#include "Solver.h"
 #include "Drawer.h"
 
 SolvedTruss::SolvedTruss(Truss &truss)
@@ -11,10 +10,10 @@ SolvedTruss::SolvedTruss(Truss &truss)
 {
 }
 
-void SolvedTruss::solve()
+void SolvedTruss::solve(SOLVER_OPTS opts)
 {
     Solver solver(*this);
-    solver.solve();
+    solver.solve(opts);
 
     this->globalForces = solver.getGlobalForces();
     this->globalDisplacements = solver.getGlobalDisplacements();
