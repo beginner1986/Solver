@@ -28,7 +28,7 @@ svg::Dimensions Drawer::calculateDimensions(const SolvedTruss &truss)
 
     for (size_t i = 0; i < truss.dofsCount; i++)
     {
-        if (i % 2 != 0)
+        if (i % 2 == 0)
         {
             double x1 = truss.coordinates.at(i);
             double x2 = truss.getInputTruss().coordinates.at(i);
