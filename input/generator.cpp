@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
 
     // constant part of the TRUSS file
     double A = 0.15 + elementLength / 100;
-    file << "TRUSS" << std::endl << "A " << A << std::endl << "E 2e10" << std::endl;
+    file << "TRUSS" << std::endl << "A 0.3" << std::endl << "E 120e4" << std::endl;
 
     // generate all the nodes
     file << "DOFS " << 2 * nodesCount << std::endl;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[])
     // following spans loads
     for(size_t node=4; node<nodesCount; node++)
     {   
-        file << ((node % 6 == 0) ? "0 -10000" : "0 0") << std::endl;
+        file << ((node % 6 == 0) ? "0 10000" : "0 0") << std::endl;
     }
     return 0;
 }

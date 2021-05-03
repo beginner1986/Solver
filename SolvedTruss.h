@@ -14,7 +14,6 @@ public:
 
 private:
     Truss &truss;
-    double displacementsScale;
 
 public:
     SolvedTruss(Truss &truss);
@@ -23,7 +22,6 @@ public:
     Truss getInputTruss() const { return truss; }
 
 private:
-    double calculateScale();
     void applyDisplacements(arma::Col<double> displacements);
 };
 

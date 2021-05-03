@@ -25,7 +25,6 @@ void Solver::solve(SOLVER_OPTS opts)
             break;
     }
 
-
     std::vector<arma::Col<double>> globalInternalForces = calculateGlobalInternalForces();
     reactionForces = calculateReactionForces(globalInternalForces);
     elementsInternalStress = calculateElementsInternalStress(globalInternalForces);

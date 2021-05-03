@@ -14,9 +14,9 @@ void Drawer::draw(SolvedTruss &truss)
     drawElements(truss, svg::Color::Blue, 3);
     drawElements(truss.getInputTruss(), svg::Color::Magenta, 1);
     drawForces(truss.getInputTruss(), truss.externalForces, svg::Color::Red);
-    drawForces(truss, truss.reactionForces, svg::Color::Green);
+    //drawForces(truss, truss.reactionForces, svg::Color::Green);
     drawConstrains(truss.getInputTruss());
-    drawInternalStress(truss);
+    //drawInternalStress(truss);
 
     document.save();
 }
