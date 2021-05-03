@@ -174,7 +174,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
     }
 
     arma::Col<double> reducedDisplacements(reducedForces.n_rows);
-    jacobiSolve(reducedDisplacements, reducedStiffness, reducedForces);
+    gaussSeidelSolve(reducedDisplacements, reducedStiffness, reducedForces);
 
     arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
     std::cout << "Wektor reszt:" << std::endl << r << std::endl;
@@ -319,8 +319,7 @@ void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma
 
 void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
 {
-    size_t n = forces.n_rows;
-
+    size_t n = displacements.n_rows;
     double normVal = std::numeric_limits<double>::max();
     double tolerance = 1e-4; 
     uint iterations = 0;
@@ -329,7 +328,7 @@ void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, 
     {
         arma::Col<double> oldDisplacements = displacements;
         
-        for(size_t i=1; i<n; i++)
+        for(size_t i=0; i<n; i++)
         {
             double sigma = 0;
             
@@ -357,5 +356,36 @@ void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, 
 
 void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
 {
+    size_t n = displacements.n_rows;
+    double normVal = std::numeric_limits<double>::max();
+    double tolerance = 1e-4; 
+    uint iterations = 0;
     
+    while(normVal > tolerance)
+    {
+        arma::Col<double> oldDisplacements = displacements;
+
+        for(size_t i=0; i<n; i++)
+        {
+            double sigma = 0;
+            
+            for(size_t j=0; j<n; j++)
+            {
+                if(i != j)
+                    sigma += (stiffness(i,j) * displacements(j));
+            }
+            displacements(i) = (1 / stiffness(i,i)) * (forces(i) - sigma);
+        }
+        
+        iterations++;
+
+        double maxDiff = 0;
+        for(size_t i=0; i<n; i++)
+        {
+            double diff = oldDisplacements(i) - displacements(i);
+            if(diff > maxDiff)
+                maxDiff = diff;
+        }
+        normVal = maxDiff;
+    }
 }
