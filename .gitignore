@@ -1,5 +1,6 @@
 # Executable project
 solver
+input/generator
 
 # Generated vector graphics
 *.svg
