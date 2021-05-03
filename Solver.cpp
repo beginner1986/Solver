@@ -170,7 +170,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
     }
 
     arma::Col<double> reducedDisplacements(reducedForces.n_rows);
-    arma::solve(reducedDisplacements, reducedStiffness, reducedForces);
+    luSolve(reducedDisplacements, reducedStiffness, reducedForces);
 
     arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
     std::cout << "Wektor reszt:" << std::endl << r << std::endl;
