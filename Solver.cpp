@@ -1,7 +1,11 @@
+#include <cmath>
+#include <limits>
 #include "Solver.h"
 
 void luSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
 void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
+void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
+void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
 
 void Solver::solve(SOLVER_OPTS opts)
 {
@@ -170,7 +174,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
     }
 
     arma::Col<double> reducedDisplacements(reducedForces.n_rows);
-    luSolve(reducedDisplacements, reducedStiffness, reducedForces);
+    jacobiSolve(reducedDisplacements, reducedStiffness, reducedForces);
 
     arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
     std::cout << "Wektor reszt:" << std::endl << r << std::endl;
@@ -311,4 +315,47 @@ void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma
     arma::Mat<double> Q, R;
     arma::qr(Q, R, stiffness);
     displacements = R.i() * Q.t() * forces;
+}
+
+void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+{
+    size_t n = forces.n_rows;
+
+    double normVal = std::numeric_limits<double>::max();
+    double tolerance = 1e-4; 
+    uint iterations = 0;
+
+    while(normVal > tolerance)
+    {
+        arma::Col<double> oldDisplacements = displacements;
+        
+        for(size_t i=1; i<n; i++)
+        {
+            double sigma = 0;
+            
+            for(size_t j=0; j<n; j++)
+            {
+                if(i != j)
+                    sigma = sigma + stiffness(i,j) * displacements(j);
+            }
+            
+            displacements(i) = (1 / stiffness(i,i)) * (forces(i) - sigma);
+        }
+        
+        iterations++;
+
+        double maxDiff = 0;
+        for(size_t i=0; i<n; i++)
+        {
+            double diff = oldDisplacements(i) - displacements(i);
+            if(diff > maxDiff)
+                maxDiff = diff;
+        }
+        normVal = maxDiff;
+    }
+}
+
+void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+{
+    
 }
