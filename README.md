@@ -47,7 +47,7 @@ $ sudo make install
 - simple-svg - single header library
 ```https://github.com/adishavit/simple-svg```
 
-### USAGE
+### COMPILATION
 Lazy way to run the project:
 ```sh
 $ ./rebuild
@@ -64,4 +64,26 @@ $ make
 Remove created files:
 ```sh
 $ make clean
+```
+
+### USAGE
+Display usage instructions:
+```sh
+$ ./solver
+```
+
+Solve example input truss using dense sfiffness matrix:
+```sh
+$ ./solver input/97.truss -dense
+```
+
+Solve example input truss using sparse sfiffness matrix:
+```sh
+$ ./solver input/97.truss -sparse
+```
+
+Generate new truss (about 5000 elements, 5m long):
+```sh
+$ cd input
+$ ./generator 5000 5
 ```
