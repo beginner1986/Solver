@@ -5,13 +5,18 @@
 int main(int argc, char *argv[])
 {
     uint elementLength = 1;
+    std::string dir = "";
 
     // arguments check
-    if(argc == 3)
+    if(argc == 4)
+    {
+        dir = std::string(argv[3]);
+    }
+    else if(argc == 3)
     {
         elementLength = static_cast<uint>(atoi(argv[2]));
     }
-    else if(argc == 1 || argc > 3)
+    else if(argc == 1 || argc > 4)
     {
         std::cout << "usage:" << std::endl;
         std::cout << "\t./generator minimum_number_of_elements" << std::endl;
@@ -43,7 +48,10 @@ int main(int argc, char *argv[])
     std::cout << "Element length: " << elementLength << std::endl;
 
     // create the output file
-    std::string fileName = std::to_string(elementsCount) + ".truss";
+    std::string fileName = "";
+    if(dir != "") 
+        fileName= dir + '/';
+    fileName += std::to_string(elementsCount) + ".truss";
 
     std::ofstream file;
     file.open(fileName,std::ios::out);
