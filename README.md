@@ -84,6 +84,10 @@ $ ./solver input/97.truss -sparse
 
 Generate new truss (about 5000 elements, 5m long):
 ```sh
-$ cd input
-$ ./generator 5000 5
+$ ./generator 5000 5 input
+```
+
+Generate test cases automatically:
+```sh
+$ ./test_gen.sh
 ```
