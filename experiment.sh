@@ -3,10 +3,10 @@
 RES_FILE=result.csv
 DIRECTORY="input/tests"/*
 
-echo 'file; DOFs; nodes; elements; solver; remainder; solving time; summary time' > $RES_FILE
+echo 'solver; file; DOFs; nodes; elements; remainder; solving time; summary time' | tee $RES_FILE
 
 for file in $DIRECTORY
 do
-    ./solver "$file" -dense -experiment >> $RES_FILE
-    printf "\n" >> $RES_FILE
+    ./solver "$file" -dense -experiment | tee -a $RES_FILE
+    printf "\n" | tee -a $RES_FILE
 done
