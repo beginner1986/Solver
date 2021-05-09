@@ -11,10 +11,10 @@ SolvedTruss::SolvedTruss(Truss &truss)
 {
 }
 
-void SolvedTruss::solve(SOLVER_OPTS opts)
+void SolvedTruss::solve(SOLVER_OPTS opts, bool times)
 {
     Solver solver(*this);
-    solver.solve(opts);
+    solver.solve(opts, times);
 
     this->globalForces = solver.getGlobalForces();
     this->globalDisplacements = solver.getGlobalDisplacements();

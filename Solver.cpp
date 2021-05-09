@@ -1,5 +1,6 @@
 #include <cmath>
 #include <limits>
+#include <chrono>
 #include "Solver.h"
 
 void luSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
@@ -7,8 +8,9 @@ void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma
 void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
 void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
 
-void Solver::solve(SOLVER_OPTS opts)
+void Solver::solve(SOLVER_OPTS opts, bool times)
 {
+    auto totalTimeStart = std::chrono::steady_clock::now();
     std::tie(sins, coss, lengths) = calculateSinCosLen();
     globalElementsStiffness = calculateElementsStiffnessGlobal();
     globalForces = truss.externalForces;
@@ -16,22 +18,41 @@ void Solver::solve(SOLVER_OPTS opts)
     arma::Mat<double> globalStiffnessMatrix;
     arma::SpMat<double> globalStiffnessSparseMatrix;
 
-    switch(opts)
+    auto solveTimeStart = std::chrono::steady_clock::now();
+    auto solveTimeEnd = std::chrono::steady_clock::now();
+    if(opts == SOLVER_OPTS::DENSE)
     {
-        case SOLVER_OPTS::DENSE:
-            globalStiffnessMatrix = calculateGlobalStiffnessMatrix();
-            globalDisplacements = calculateGlobalDisplacements(globalStiffnessMatrix, globalForces);
-            break;
+        globalStiffnessMatrix = calculateGlobalStiffnessMatrix();
+        solveTimeStart = std::chrono::steady_clock::now();
+        globalDisplacements = calculateGlobalDisplacements(globalStiffnessMatrix, globalForces);
+        solveTimeEnd = std::chrono::steady_clock::now();
+    }
+    else if(opts == SOLVER_OPTS::SPARSE)
+    {
+        globalStiffnessSparseMatrix = calculateGlobalStiffnessSparseMatrix();
+        solveTimeStart = std::chrono::steady_clock::now();
+        globalDisplacements = calculateGlobalDisplacements(globalStiffnessSparseMatrix, globalForces);
+        solveTimeEnd = std::chrono::steady_clock::now();
+    }
 
-        case SOLVER_OPTS::SPARSE:
-            globalStiffnessSparseMatrix = calculateGlobalStiffnessSparseMatrix();
-            globalDisplacements = calculateGlobalDisplacements(globalStiffnessSparseMatrix, globalForces);
-            break;
+    // equations system solving time
+    if(times)
+    {
+        std::chrono::duration<double> solveElapsed = solveTimeEnd - solveTimeStart;
+        std::cout << solveElapsed.count() << "; ";
     }
 
     std::vector<arma::Col<double>> globalInternalForces = calculateGlobalInternalForces();
     reactionForces = calculateReactionForces(globalInternalForces);
     elementsInternalStress = calculateElementsInternalStress(globalInternalForces);
+
+    // total MES solving time
+    auto totalTimeEnd = std::chrono::steady_clock::now();
+    if(times)
+    {
+        std::chrono::duration<double> totalElapsed = totalTimeEnd - totalTimeStart;
+        std::cout << totalElapsed.count() << "; ";
+    }
 }
 
 std::tuple<std::vector<double>, std::vector<double>, std::vector<double>> Solver::calculateSinCosLen()

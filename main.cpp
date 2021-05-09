@@ -33,10 +33,12 @@ int main(int argc, char *argv[])
     if(std::find(parameters.begin(), parameters.end(), "-dense") != parameters.end())
         dense = true;
     bool experiment = false;
+    bool times = false;
     if(std::find(parameters.begin(), parameters.end(), "-experiment") != parameters.end())
     {
         experiment = true;
         noout = true;
+        times = true;
     }
 
     // read data from file
@@ -76,7 +78,7 @@ int main(int argc, char *argv[])
         // solverOptions = solverOptions | SOLVER_OPTS::TIMES;
     }
 
-    solvedTruss.solve(solverOptions);
+    solvedTruss.solve(solverOptions, times);
     
     // generate outputs *.svg & *.csv
     if(!noout)

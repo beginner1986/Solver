@@ -24,7 +24,7 @@ private:
 public:
     Solver(const Truss &truss) : truss(truss) {}
 
-    void solve(SOLVER_OPTS opts);
+    void solve(SOLVER_OPTS opts, bool times);
     arma::Col<double> getGlobalForces() const { return globalForces; }
     arma::Col<double> getGlobalDisplacements() const { return globalDisplacements; }
     std::vector<double> getReactionForces() const { return reactionForces; }

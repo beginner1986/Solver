@@ -17,7 +17,7 @@ private:
 
 public:
     SolvedTruss(Truss &truss);
-    void solve(SOLVER_OPTS opts);
+    void solve(SOLVER_OPTS opts, bool times);
     void draw(std::string fileName);
     Truss getInputTruss() const { return truss; }
 
