@@ -70,8 +70,7 @@ int main(int argc, char *argv[])
 
     if(experiment)
     {
-        std::cout << path << "; "
-            << truss.dofsCount << "; " 
+        std::cout << truss.dofsCount << "; " 
             << truss.nodesCount << "; " 
             << truss.elementsCount << "; ";
         
