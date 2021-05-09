@@ -3,6 +3,7 @@
 
 #include "SolvedTruss.h"
 #include "Drawer.h"
+#include "SOLVER_OPTS.h"
 
 SolvedTruss::SolvedTruss(Truss &truss)
     : Truss(truss.A, truss.E, truss.coordinates, truss.topology, truss.constrains, truss.externalForces),

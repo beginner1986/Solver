@@ -2,7 +2,6 @@
 #include <vector>
 #include <armadillo>
 #include <regex>
-#include <chrono>
 
 #include "FileReader.h"
 #include "Truss.h"
@@ -17,8 +16,6 @@ void printResults(const SolvedTruss &solvedTruss);
 
 int main(int argc, char *argv[])
 {
-    auto start = std::chrono::steady_clock::now();
-
     if (argc < 2)
         printUsage();
 
@@ -35,14 +32,10 @@ int main(int argc, char *argv[])
     bool dense = false;
     if(std::find(parameters.begin(), parameters.end(), "-dense") != parameters.end())
         dense = true;
-    bool times = false;
-    if(std::find(parameters.begin(), parameters.end(), "-times") != parameters.end())
-        times = true;
     bool experiment = false;
     if(std::find(parameters.begin(), parameters.end(), "-experiment") != parameters.end())
     {
         experiment = true;
-        times = true;
         noout = true;
     }
 
@@ -51,15 +44,6 @@ int main(int argc, char *argv[])
     // std::cout << path << std::endl;
     FileReader reader(path);
     Truss truss = reader.read();
-
-    if(experiment)
-    {
-        std::cout << path << "; "
-            << truss.dofsCount << "; " 
-            << truss.nodesCount << "; " 
-            << truss.elementsCount << "; ";
-        times = true;
-    }
 
     // solving the truss
     SolvedTruss solvedTruss(truss);
@@ -82,12 +66,17 @@ int main(int argc, char *argv[])
         exit(-1);
     }
 
-    auto solveStart = std::chrono::steady_clock::now();
+    if(experiment)
+    {
+        std::cout << path << "; "
+            << truss.dofsCount << "; " 
+            << truss.nodesCount << "; " 
+            << truss.elementsCount << "; ";
+        
+        // solverOptions = solverOptions | SOLVER_OPTS::TIMES;
+    }
+
     solvedTruss.solve(solverOptions);
-    auto solveEnd = std::chrono::steady_clock::now();
-    std::chrono::duration<double> elapsed = solveEnd - solveStart;
-    if(times)
-        std::cout << elapsed.count() << "; ";
     
     // generate outputs *.svg & *.csv
     if(!noout)
@@ -100,11 +89,6 @@ int main(int argc, char *argv[])
         FileWriter writer(solvedTruss);
         writer.save(fileName + ".csv");
     }
-
-    auto end = std::chrono::steady_clock::now();
-    elapsed = end - start;
-    if(times)
-        std::cout << elapsed.count() << std::endl;
 
     return 0;
 }

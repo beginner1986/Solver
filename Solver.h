@@ -6,11 +6,7 @@
 #include <armadillo>
 
 #include "Truss.h"
-
-enum class SOLVER_OPTS {
-    DENSE,
-    SPARSE
-};
+#include "SOLVER_OPTS.h"
 
 class Solver
 {

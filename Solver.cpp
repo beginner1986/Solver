@@ -177,8 +177,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
     luSolve(reducedDisplacements, reducedStiffness, reducedForces);
 
     arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
-    std::cout << "Wektor reszt:" << std::endl << r << std::endl;
-    std::cout << "MAX RESZTA:" << r.max() << std::endl;
+    std::cout << " " << std::max(std::abs(r.max()), std::abs(r.min())) << ";";
 
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
 
@@ -212,6 +211,9 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::SpMat<double>
 
     arma::Col<double> reducedDisplacements(reducedForces.n_rows);
     reducedDisplacements = arma::spsolve(reducedStiffness, reducedForces);
+
+    arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
+    std::cout << " " << std::max(std::abs(r.max()), std::abs(r.min())) << ";";
 
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
 
