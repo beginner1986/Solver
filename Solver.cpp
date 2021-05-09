@@ -198,7 +198,7 @@ arma::Col<double> Solver::calculateGlobalDisplacements(const arma::Mat<double> &
     luSolve(reducedDisplacements, reducedStiffness, reducedForces);
 
     arma::Col<double> r = reducedForces - reducedStiffness * reducedDisplacements;
-    std::cout << " " << std::max(std::abs(r.max()), std::abs(r.min())) << ";";
+    std::cout << " " << std::max(std::abs(r.max()), std::abs(r.min())) << "; ";
 
     arma::Col<double> globalDispalcements(truss.dofsCount, arma::fill::zeros);
 

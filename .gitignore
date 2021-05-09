@@ -11,5 +11,8 @@ generator
 # Data for anaysis
 *.txt
 
+# Test cases
+input/tests/*
+
 # Visual Studio Code files
 .vscode/
