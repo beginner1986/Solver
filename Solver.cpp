@@ -3,10 +3,10 @@
 #include <chrono>
 #include "Solver.h"
 
-void luSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
-void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
-void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
-void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces);
+void luSolve(arma::Col<double> &displacements, arma::Mat<double> &tiffness, arma::Col<double> &forces);
+void qrSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces);
+void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces);
+void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces);
 
 void Solver::solve(SOLVER_OPTS opts, bool times)
 {
@@ -327,21 +327,21 @@ std::vector<arma::Col<double>> Solver::calculateElementsInternalStress(std::vect
     return result;
 }
 
-void luSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+void luSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces)
 {
     arma::Mat<double> L, U;
     arma::lu(L, U, stiffness);
     displacements = U.i() * L.i() * forces;
 }
 
-void qrSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+void qrSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces)
 {
     arma::Mat<double> Q, R;
     arma::qr(Q, R, stiffness);
     displacements = R.i() * Q.t() * forces;
 }
 
-void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces)
 {
     size_t n = displacements.n_rows;
     double normVal = std::numeric_limits<double>::max();
@@ -378,7 +378,7 @@ void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, 
     }
 }
 
-void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> stiffness, arma::Col<double> forces)
+void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces)
 {
     size_t n = displacements.n_rows;
     double normVal = std::numeric_limits<double>::max();
