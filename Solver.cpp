@@ -1,12 +1,14 @@
 #include <cmath>
 #include <limits>
 #include <chrono>
+#include <fstream>
 #include "Solver.h"
 
 void luSolve(arma::Col<double> &displacements, arma::Mat<double> &tiffness, arma::Col<double> &forces);
 void qrSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces);
 void jacobiSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces);
 void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> &stiffness, arma::Col<double> &forces);
+void drawMatrix(arma::Mat<double> mat);
 
 void Solver::solve(SOLVER_OPTS opts, bool times)
 {
@@ -148,6 +150,8 @@ arma::Mat<double> Solver::calculateGlobalStiffnessMatrix()
             }
         }
     }
+
+    // drawMatrix(result);
 
     return result;
 }
@@ -412,5 +416,29 @@ void gaussSeidelSolve(arma::Col<double> &displacements, arma::Mat<double> &stiff
                 maxDiff = diff;
         }
         normVal = maxDiff;
+    }
+}
+
+void drawMatrix(arma::Mat<double> mat)
+{
+    std::string fileName = "matrix.pbm";
+    std::ofstream file;
+    file.open(fileName, std::ios::out);
+    
+    if(!file.is_open())
+    {
+        std::cout << "Cannot create file " << fileName << "." << std::endl;
+        exit(-1);
+    }
+
+    file << "P1" << std::endl << mat.n_cols << " " << mat.n_rows << std::endl;
+    
+    for(size_t i=0; i<mat.n_cols; i++)
+    {
+        for(size_t j=0; j<mat.n_rows; j++)
+        {
+            file << ((mat(i, j) != 0) ? 1 : 0) << " ";
+        }
+        file << std::endl;
     }
 }
