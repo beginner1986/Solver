@@ -1,8 +1,8 @@
 #General Makefile variables
 CXX = g++
-CXXFLAGS = -Wall -pedantic -O1 --std=c++11
+CXXFLAGS = -Wall -pedantic -O3 --std=c++11
 FLAGS_ARMADILLO = -larmadillo 
-FLAGS_OMP = #-fopenmp
+FLAGS_OMP = -fopenmp
 
 #Source files that should be compiled
 SRC = $(filter-out generator.cpp, $(wildcard *.cpp))
